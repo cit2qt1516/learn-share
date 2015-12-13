@@ -13,7 +13,7 @@ exports.getTeachers = function (req, res) {
     Teacher.find(function (err, teacher) {
         if (err) res.send(500, err.message);
 
-        console.log('GET /teacher');
+        console.log('GET /teachers');
         res.status(200).jsonp(teacher);
     });
 };
@@ -23,15 +23,16 @@ exports.addTeacher = function (req, res) {
     console.log('POST /teacher');
     console.log(req.body);
 
-    Teacher.findOne({email: req.body.email}, function (err, teacher) {
+    Teacher.findOne({username: req.body.username}, function (err, teacher) {
         if (!teacher) {
             var teacher = new Teacher({
                 name: req.body.name,
+                username: req.body.username,
                 email: req.body.email,
                 pass: req.body.pass,
                 subjects: req.body.subjects
             });
-            
+
             teacher.save(function (err) {
                 if (!err)
                     console.log('Teacher added');
@@ -41,11 +42,26 @@ exports.addTeacher = function (req, res) {
 
             res.send(teacher._id);
         } else {
-            res.send('Ese email ya está en uso');
+            res.send('Ese username ya está en uso');
         }
 
     })
 }
+
+// Update a teacher
+exports.updateTeacher = function (req, res) {
+    Teacher.findOneAndUpdate(req.params.id, function (err, teacher) {
+        teacher.set(function (err) {
+            if (!err) {
+                console.log('Updated');
+            }
+            else {
+                console.log('ERROR' + err);
+            }
+        });
+        res.send('Modified');
+    });
+};
 
 // Delete teacher account
 exports.deleteTeacher = function (req, res) {
@@ -69,55 +85,48 @@ exports.getTeachersBySubject = function (req, res) {
 
     Student.findById(req.params._id, function (err, student) {
         if (err) res.send(500, err.message);
-        console.log(student);
+        console.log(student.subjects);
 
-        Teacher.find({"subjects": student.subjects}, function (err, teacher) {
-            if (err) res.send(500, err.message);
+        var teachers = [];
 
-            res.status(200).jsonp(teacher);
-        });
+        for (var i = 0; i < student.subjects.length; i++) {
+            Teacher.find({"subjects": student.subjects[i]}, function (err, teacher) {
+                if (err) res.send(500, err.message);
+
+                for (var j = 0; j < teacher.length; j++) {
+                    teachers.push(teacher[j]);
+                }
+            });
+        }
+
+        console.log(teachers);
+
+        res.status(200).jsonp(teachers);
     });
 };
 
-/*//GET by ID
-exports.findById = function (req, res) {
-    teacher.findById(req.params.id, function (err, nrTTP) {
-        if (err) return res.send(500, err.message);
+// Get teacher by username
+exports.findByUsername = function (req, res) {
+    var user = "username:" + req.params._id;
 
-        console.log('GET /nrTTP/' + req.params.id);
-        res.status(200).jsonp(nrTTP);
+    Teacher.findOne(user, function (err, teacher) {
+        if (!err) {
+            res.send(teacher);
+        }
+        else {
+            console.log('ERROR: ' + err);
+        }
     });
 };
 
-//PUT - Update a register already exists
-exports.updateteacher = function (req, res) {
-    teacher.findOneAndUpdate(req.params.id, function (err, nrttp) {
-        nrttp.set(function (err) {
-            //if(err) return res.send(500, err.message);
-            //res.status(200).jsonp(nrttp);
-            if (!err) {
-                console.log('Updated');
-            }
-            else {
-                console.log('ERROR' + err);
-            }
-        });
-        res.send('Modified');
-    });
-};
+/*// GET by ID
+ exports.findById = function (req, res) {
+ teacher.findById(req.params.id, function (err, nrTTP) {
+ if (err) return res.send(500, err.message);
 
-//DELETE -
-exports.deleteteacher = function (req, res) {
-    teacher.findOne({"_id": req.params.id}, function (err, nrttp) {
-        nrttp.remove(function (err) {
-            //if(err) return res.send(500, err.message);
-            if (!err) {
-                console.log('Object delete');
-            }
-            else {
-                console.log('ERROR: ' + err);
-            }
-        })
-    });
-    res.status(200).send('Delete');
-};*/
+ console.log('GET /nrTTP/' + req.params.id);
+ res.status(200).jsonp(nrTTP);
+ });
+ };
+
+ */

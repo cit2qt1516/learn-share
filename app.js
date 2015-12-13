@@ -45,12 +45,16 @@ backend.route('/students')
     .get(studentController.getStudents)
     .post(studentController.addStudent);
 backend.route('/student/:_id')
+    .get(studentController.findByUsername)
+    .put(studentController.updateStudent)
     .delete(studentController.deleteStudent);
 
 backend.route('/teachers')
     .get(teacherController.getTeachers)
     .post(teacherController.addTeacher);
 backend.route('/teacher/:_id')
+    .get(teacherController.findByUsername)
+    .put(teacherController.updateTeacher)
     .delete(teacherController.deleteTeacher);
 backend.route('/teachers/:_id')
     .get(teacherController.getTeachersBySubject);

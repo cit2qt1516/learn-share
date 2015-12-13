@@ -12,7 +12,7 @@ exports.getStudents = function (req, res) {
     Student.find(function (err, student) {
         if (err) res.send(500, err.message);
 
-        console.log('GET /student');
+        console.log('GET /students');
         res.status(200).jsonp(student);
     });
 };
@@ -22,15 +22,16 @@ exports.addStudent = function (req, res) {
     console.log('POST /student');
     console.log(req.body);
 
-    Student.findOne({email: req.body.email}, function (err, student) {
+    Student.findOne({username: req.body.username}, function (err, student) {
         if (!student) {
             var student = new Student({
                 name: req.body.name,
+                username: req.body.username,
                 email: req.body.email,
                 pass: req.body.pass,
                 subjects: req.body.subjects
             });
-            
+
             student.save(function (err) {
                 if (!err)
                     console.log('Student added');
@@ -40,11 +41,26 @@ exports.addStudent = function (req, res) {
 
             res.send(student._id);
         } else {
-            res.send('Ese email ya está en uso');
+            res.send('Ese usuario ya está en uso');
         }
 
     })
 }
+
+// Update an existent student
+exports.updateStudent = function (req, res) {
+    Student.findOneAndUpdate(req.params.id, function (err, student) {
+        student.set(function (err) {
+            if (!err) {
+                console.log('Updated');
+            }
+            else {
+                console.log('ERROR' + err);
+            }
+        });
+        res.send('Updated');
+    });
+};
 
 // Delete student account
 exports.deleteStudent = function (req, res) {
@@ -62,32 +78,27 @@ exports.deleteStudent = function (req, res) {
 /*---------------------------------------------------------------------------------*/
 // OTHER FUNCTIONS
 
+// Get student by username
+exports.findByUsername = function (req, res) {
+    var user = "username:" + req.params._id;
 
+    Student.findOne(user, function (err, student) {
+        if (!err) {
+            res.send(student);
+        }
+        else {
+            console.log('ERROR: ' + err);
+        }
+    });
+};
 
 /*//GET by ID
-exports.findById = function (req, res) {
-    student.findById(req.params.id, function (err, nrTTP) {
-        if (err) return res.send(500, err.message);
+ exports.findById = function (req, res) {
+ student.findById(req.params.id, function (err, nrTTP) {
+ if (err) return res.send(500, err.message);
 
-        console.log('GET /nrTTP/' + req.params.id);
-        res.status(200).jsonp(nrTTP);
-    });
-};
-
-//PUT - Update a register already exists
-exports.updatestudent = function (req, res) {
-    student.findOneAndUpdate(req.params.id, function (err, nrttp) {
-        nrttp.set(function (err) {
-            //if(err) return res.send(500, err.message);
-            //res.status(200).jsonp(nrttp);
-            if (!err) {
-                console.log('Updated');
-            }
-            else {
-                console.log('ERROR' + err);
-            }
-        });
-        res.send('Modified');
-    });
-};
-*/
+ console.log('GET /nrTTP/' + req.params.id);
+ res.status(200).jsonp(nrTTP);
+ });
+ };
+ */
