@@ -49,7 +49,8 @@ exports.addStudent = function (req, res) {
 
 // Update an existent student
 exports.updateStudent = function (req, res) {
-    Student.findOneAndUpdate(req.params.id, function (err, student) {
+    Student.findOneAndUpdate({"_id": req.params._id}, req.body, function (err, student) {
+        console.log("UPDATE");
         student.set(function (err) {
             if (!err) {
                 console.log('Updated');
@@ -58,7 +59,7 @@ exports.updateStudent = function (req, res) {
                 console.log('ERROR' + err);
             }
         });
-        res.send('Updated');
+        res.send('Modified');
     });
 };
 
@@ -91,14 +92,3 @@ exports.findByUsername = function (req, res) {
         }
     });
 };
-
-/*//GET by ID
- exports.findById = function (req, res) {
- student.findById(req.params.id, function (err, nrTTP) {
- if (err) return res.send(500, err.message);
-
- console.log('GET /nrTTP/' + req.params.id);
- res.status(200).jsonp(nrTTP);
- });
- };
- */

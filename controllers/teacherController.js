@@ -30,7 +30,8 @@ exports.addTeacher = function (req, res) {
                 username: req.body.username,
                 email: req.body.email,
                 pass: req.body.pass,
-                subjects: req.body.subjects
+                subjects: req.body.subjects,
+                votes: 0
             });
 
             teacher.save(function (err) {
@@ -50,7 +51,8 @@ exports.addTeacher = function (req, res) {
 
 // Update a teacher
 exports.updateTeacher = function (req, res) {
-    Teacher.findOneAndUpdate(req.params.id, function (err, teacher) {
+    Teacher.findOneAndUpdate({"_id": req.params._id}, req.body, function (err, teacher) {
+        console.log("UPDATE");
         teacher.set(function (err) {
             if (!err) {
                 console.log('Updated');
@@ -79,32 +81,6 @@ exports.deleteTeacher = function (req, res) {
 /*---------------------------------------------------------------------------------*/
 // OTHER FUNCTIONS
 
-// Get teachers matching students' subjects
-exports.getTeachersBySubject = function (req, res) {
-    console.log('GET teachers that teach a subject');
-
-    Student.findById(req.params._id, function (err, student) {
-        if (err) res.send(500, err.message);
-        console.log(student.subjects);
-
-        var teachers = [];
-
-        for (var i = 0; i < student.subjects.length; i++) {
-            Teacher.find({"subjects": student.subjects[i]}, function (err, teacher) {
-                if (err) res.send(500, err.message);
-
-                for (var j = 0; j < teacher.length; j++) {
-                    teachers.push(teacher[j]);
-                }
-            });
-        }
-
-        console.log(teachers);
-
-        res.status(200).jsonp(teachers);
-    });
-};
-
 // Get teacher by username
 exports.findByUsername = function (req, res) {
     var user = "username:" + req.params._id;
@@ -119,14 +95,59 @@ exports.findByUsername = function (req, res) {
     });
 };
 
-/*// GET by ID
- exports.findById = function (req, res) {
- teacher.findById(req.params.id, function (err, nrTTP) {
- if (err) return res.send(500, err.message);
+// Get teachers matching students' subjects
+exports.getTeachersBySubject = function (req, res) {
+    console.log('GET teachers that teach a subject');
 
- console.log('GET /nrTTP/' + req.params.id);
- res.status(200).jsonp(nrTTP);
- });
- };
+    Student.findById(req.params._id, function (err, student) {
+        if (err) res.send(500, err.message);
+        console.log(student.subjects);
 
- */
+        var teachers = [];
+
+        Teacher.find({"subjects": {$in: student.subjects}}, function (err, teacher) {
+            if (err) res.send(500, err.message);
+
+            for (var j = 0; j < teacher.length; j++) {
+                teachers.push(teacher[j]);
+            }
+
+            res.status(200).jsonp(teachers);
+        });
+    });
+};
+
+// Get teachers with most votes
+exports.getTeachersMostVoted = function (req, res) {
+    console.log('GET the most voted teachers for each subject');
+
+    var subjects = ["Historia", "Música"];
+    var teachers = [];
+
+    Teacher.find({"subjects": {$in: subjects}}).sort("-votes").exec(function (err, teacher) {
+        if (err) res.send(500, err.message);
+
+        for (var i = 0; i < teacher.length; i++) {
+            var sub = teacher[i].subjects[0];
+            var pos = subjects.indexOf(sub);
+            if (pos > -1) {
+                subjects.splice(pos, 1);
+                teachers.push(teacher[i]);
+            }
+        }
+
+        res.status(200).jsonp(teachers);
+    });
+};
+
+// Update a teacher
+exports.voteTeacher = function (req, res) {
+    var conditions = {_id: req.params._id}
+        , update = {$inc: {votes: 1}};
+
+    Teacher.update(conditions, update, function (err, teacher) {
+        console.log("Vote teacher");
+
+        res.send('Voted');
+    });
+};
