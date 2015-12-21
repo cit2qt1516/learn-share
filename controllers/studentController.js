@@ -30,7 +30,9 @@ exports.addStudent = function (req, res) {
                 username: req.body.username,
                 email: req.body.email,
                 pass: req.body.pass,
-                subjects: req.body.subjects
+                subjects: req.body.subjects,
+                lat: req.body.lat,
+                long: req.body.long
             });
 
             student.save(function (err) {
