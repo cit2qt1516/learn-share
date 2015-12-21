@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var bignum = require('bignum');
 var sha256 = require('sha256');
 var Student = mongoose.model('studentModel');
+var Teacher = mongoose.model('teacherModel');
 var RSA = require('./rsa');
 
 /*---------------------------------------------------------------------------------*/
@@ -92,3 +93,56 @@ exports.findByUsername = function (req, res) {
         }
     });
 };
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        ;
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    d = d * 1000 //distancias en metros
+    return d; //en metros
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180)
+}
+
+exports.findTeacherOffersPlace = function (req, res) {
+    Student.findById(req.params._id, function (err, student) {
+        var subjects = student.subjects;
+        var latitud = student.lat;
+        var longitud = student.long;
+        if (err) res.send(500, err.message);
+        console.log(student.subjects);
+        Teacher.find({"subjects": {$in: student.subjects}}, function (err, teachers) {
+            for ( var i = 0; i < teachers.length; i++) {
+                var distancia = getDistanceFromLatLonInKm(latitud, longitud, teachers[i].lat, teachers[i].long);
+                teachers[i].distance = distancia;
+
+            }
+            //if (distancia <= 30000) {
+            //    var teacher = ({
+            //        name: teachers[i].name,
+            //        id: teachers[i]._id,
+            //        distance: distancia
+            //    });
+            //if (teacher.id != req.params._id) {
+            //
+            //    teachers.push(teacher);
+            //    console.log(JSON.stringify(teachers));
+            //} else {
+            //    res.send("eres tu")
+            //}
+            //}
+
+            res.status(200).json(teachers);
+        })
+    });
+}
+

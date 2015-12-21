@@ -31,7 +31,9 @@ exports.addTeacher = function (req, res) {
                 email: req.body.email,
                 pass: req.body.pass,
                 subjects: req.body.subjects,
-                votes: 0
+                votes: 0,
+                lat: req.body.lat,
+                long : req.body.long
             });
 
             teacher.save(function (err) {
