@@ -103,24 +103,22 @@ $("#RegisterBtn").click(function () {
      var out = y.toString();*/
 
     var k = new Object();
-    k.content = blindMsg;
+    k.content = bigInt2str(blindMsg, 64);
     var data = JSON.stringify(k);
+    console.log(data);
 
     $.ajax({
         url: "http://localhost:3000/keys",
-        type: 'GET',
+        type: 'POST',
         crossDomain: true,
         contentType: 'application/json',
-        dataType: 'json',
         data: data,
         success: function (data_API) {
-            window.localStorage.setItem("username", user.username);
-            window.localStorage.setItem("userID", data_API.userId);
-            window.localStorage.setItem("token", data_API.token);
-            window.location.href = 'index.html';
+            console.log(data_API);
+            console.log(data_API.publicKey);
         },
-        error: function (error_API) {
-            window.alert(error_API.response);
+        error: function () {
+            window.alert("NO FUNCIONA");
         }
     });
 });
