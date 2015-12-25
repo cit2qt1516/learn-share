@@ -1,4 +1,5 @@
 var express = require("express"),
+    cors = require('cors'),
     app = express(),
     bodyParser = require("body-parser"),
     methodOverride = require("method-override"),
@@ -14,6 +15,7 @@ mongoose.connect('mongodb://localhost/learnShare', function (err, res) {
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(methodOverride());
+app.use(cors());
 
 // Import Models and controllers
 /*var models = require('./models/commentModel')(app, mongoose);
@@ -80,7 +82,11 @@ backend.route('/comment/:_id')
 
 backend.route('/keys')
     .get(keysController.getKeys)
+    .post(keysController.encryptBlindKPu);
+backend.route('/keys/Paillier')
     .post(keysController.generatePaillierKeys);
+backend.route('/keys/RSA')
+    .post(keysController.generateRSAKeys);
 backend.route('/keys/:_id')
     .delete(keysController.deleteKey);
 
