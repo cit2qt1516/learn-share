@@ -21,9 +21,11 @@ app.use(methodOverride());
 var models = require('./models/studentModel')(app, mongoose);
 var models = require('./models/teacherModel')(app, mongoose);
 var models = require('./models/commentModel')(app, mongoose);
+var models = require('./models/keysModel')(app, mongoose);
 var studentController = require('./controllers/studentController');
 var teacherController = require('./controllers/teacherController');
 var commentController = require('./controllers/commentController');
+var keysController = require('./controllers/keysController');
 
 // Example Route
 var router = express.Router();
@@ -75,6 +77,12 @@ backend.route('/comments/:_id')
     .get(commentController.findByTeacher);
 backend.route('/comment/:_id')
     .put(commentController.updateComment);
+
+backend.route('/keys')
+    .get(keysController.getKeys)
+    .post(keysController.generatePaillierKeys);
+backend.route('/keys/:_id')
+    .delete(keysController.deleteKey);
 
 /*backend.route('/nrttp/:id')
  .get(NrBController.findById)

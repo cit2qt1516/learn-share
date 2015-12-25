@@ -3,6 +3,7 @@ var bignum = require('bignum');
 var sha256 = require('sha256');
 var Teacher = mongoose.model('teacherModel');
 var Student = mongoose.model('studentModel');
+var Key = mongoose.model('keysModel');
 var RSA = require('./rsa');
 
 /*---------------------------------------------------------------------------------*/
@@ -33,7 +34,7 @@ exports.addTeacher = function (req, res) {
                 subjects: req.body.subjects,
                 votes: 0,
                 lat: req.body.lat,
-                long : req.body.long
+                long: req.body.long
             });
 
             teacher.save(function (err) {
