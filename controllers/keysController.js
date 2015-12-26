@@ -19,26 +19,65 @@ exports.getKeys = function (req, res) {
     });
 };
 
+// Get RSA Key
+exports.getRSAKey = function (req, res) {
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var mongoKeys = keys[0];
+        var puK = mongoKeys.get("publicKey").bits + "_" + mongoKeys.get("publicKey").n + "_" + mongoKeys.get("publicKey").e;
+
+        res.status(200).jsonp(puK);
+    });
+};
+
+// Encrypt blinded Kpu User
 exports.encryptBlindKPu = function (req, res) {
     console.log('ENCRYPT Blind User-PublicKey');
 
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var blindMsg = bignum(req.body.content);
+        var blindMsg = bignum(req.body.content, base = 16);
 
         //var k = RSA.generateKeysFromMongo(keys[0]);
         //console.log("CLAVE RSA : " + k);
 
         var mongoKeys = keys[0];
 
-        var pK = new rsa.publicKey(this.bitlength, bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
-        var sK = new rsa.privateKey(this.bitlength, bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
+        var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
+        var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
 
-        var bc = sK.encryptPrK(bignum(blindMsg));
-        //var bc = "HOLA";
+        var bc = sK.encryptPrK(blindMsg);
+        console.log("Encrypted Blind: " + bc.toString(base = 16));
 
-        res.status(200).jsonp(bc);
+        res.status(200).jsonp(bc.toString(base = 16));
+    });
+}
+
+// Decrypt unblinded Kpu user
+exports.decryptUnblindKPu = function (req, res) {
+    console.log('DECRYPT Unblind User-PublicKey');
+
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var unblindedEnc = bignum(req.body.content, base = 16);
+
+        var mongoKeys = keys[0];
+
+        var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
+        var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
+
+        console.log(unblindedEnc);
+        d = pK.decryptPuK(unblindedEnc);
+        console.log("Decrypted: " + d.toString(base = 16));
+
+        dStr = d.toString(base = 16);
+        var pKUser = new rsa.publicKey(parseInt(dStr.split("aaa")[0]), dStr.split("aaa")[1], dStr.split("aaa")[2]);
+        console.log(pKUser);
+
+        res.status(200).jsonp(d.toString(base = 16));
     });
 }
 

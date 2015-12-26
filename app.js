@@ -81,11 +81,15 @@ backend.route('/comment/:_id')
     .put(commentController.updateComment);
 
 backend.route('/keys')
-    .get(keysController.getKeys)
+    .get(keysController.getKeys);
+backend.route('/keys/blind1')
     .post(keysController.encryptBlindKPu);
+backend.route('/keys/blind2')
+    .post(keysController.decryptUnblindKPu);
 backend.route('/keys/Paillier')
     .post(keysController.generatePaillierKeys);
 backend.route('/keys/RSA')
+    .get(keysController.getRSAKey)
     .post(keysController.generateRSAKeys);
 backend.route('/keys/:_id')
     .delete(keysController.deleteKey);

@@ -56,25 +56,24 @@ $("#LoginBtn").click(function () {
 });
 
 $("#RegisterBtn").click(function () {
-    //window.alert("Generando claves");
-    var keysUser = rsa.generateKeys(1024);
-    var keysVA = rsa.generateKeys(2048);
+    /*var keysUser = rsa.generateKeys(1024);
+     var keysVA = rsa.generateKeys(2048);
 
-    var publicKey = keysUser.publicKey.bits + "_" + bigInt2str(keysUser.publicKey.e, 10) + "_" + bigInt2str(keysUser.publicKey.n, 10);
-    console.log("Message: " + publicKey);
-    // Clave pública cegada
-    var r = randTruePrime(512);
-    var blindMsg = mod(mult(str2bigInt(publicKey, 64, 0), powMod(r, keysVA.publicKey.e, keysVA.publicKey.n)), keysVA.publicKey.n);
-    console.log("Blind Message: " + bigInt2str(blindMsg, 64));
-    // Cifrado cegado con clave privada
-    var blindEnc = keysVA.privateKey.encryptPrK(blindMsg);
-    console.log("Encrypted Blind Message: " + bigInt2str(blindEnc, 64));
-    // Cifrado descegado
-    var unblindedEnc = mult(blindEnc, inverseMod(r, keysVA.publicKey.n));
-    console.log("Encrypted Message: " + bigInt2str(unblindedEnc, 64));
-    // Descifrado
-    var Dec = keysVA.publicKey.decryptPuK(unblindedEnc);
-    console.log("Message: " + bigInt2str(Dec, 64));
+     var publicKey = keysUser.publicKey.bits + "AAAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAAA" + bigInt2str(keysUser.publicKey.n, 10);
+     console.log("Message: " + publicKey);
+     // Clave pública cegada
+     var r = randTruePrime(512);
+     var blindMsg = mod(mult(str2bigInt(publicKey, 16, 0), powMod(r, keysVA.publicKey.e, keysVA.publicKey.n)), keysVA.publicKey.n);
+     console.log("Blind Message: " + bigInt2str(blindMsg, 16));
+     // Cifrado cegado con clave privada
+     var blindEnc = keysVA.privateKey.encryptPrK(blindMsg);
+     console.log("Encrypted Blind Message: " + bigInt2str(blindEnc, 16));
+     // Cifrado descegado
+     var unblindedEnc = mult(blindEnc, inverseMod(r, keysVA.publicKey.n));
+     console.log("Encrypted Message: " + bigInt2str(unblindedEnc, 16));
+     // Descifrado
+     var Dec = keysVA.publicKey.decryptPuK(unblindedEnc);
+     console.log("Message: " + bigInt2str(Dec, 16));*/
 
 
     /*console.log('\n\nTesting RSA blind encryption\n');
@@ -102,20 +101,63 @@ $("#RegisterBtn").click(function () {
      console.log("· Descodificado: " + bigInt2str(y, 64));
      var out = y.toString();*/
 
-    var k = new Object();
-    k.content = bigInt2str(blindMsg, 64);
-    var data = JSON.stringify(k);
-    console.log(data);
+    var keysUser = rsa.generateKeys(1024);
 
     $.ajax({
-        url: "http://localhost:3000/keys",
-        type: 'POST',
+        url: "http://localhost:3000/keys/RSA",
+        type: 'GET',
         crossDomain: true,
         contentType: 'application/json',
-        data: data,
         success: function (data_API) {
-            console.log(data_API);
-            console.log(data_API.publicKey);
+            // Kpu servidor
+            var bits = data_API.split("_")[0];
+            var n = data_API.split("_")[1];
+            var e = data_API.split("_")[2];
+            var KpuVA = new rsa.publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(e, 10));
+
+            // Token de la Kpu del usuario
+            var publicKey = keysUser.publicKey.bits + "AAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAA" + bigInt2str(keysUser.publicKey.n, 10);
+            // Kpu cegada
+            var r = randTruePrime(512);
+            var blindMsg = mod(mult(str2bigInt(publicKey, 16, 0), powMod(r, KpuVA.e, KpuVA.n)), KpuVA.n);
+
+            var k = new Object();
+            k.content = bigInt2str(blindMsg, 16);
+            var data = JSON.stringify(k);
+
+            $.ajax({
+                url: "http://localhost:3000/keys/blind1",
+                type: 'POST',
+                crossDomain: true,
+                contentType: 'application/json',
+                data: data,
+                success: function (data_blindEnc) {
+                    var info = data_blindEnc.split("\"")[1];
+                    var blindEnc = str2bigInt(info, 16);
+                    var unblindedEnc = mult(blindEnc, inverseMod(r, KpuVA.n));
+
+                    var obj = new Object();
+                    obj.content = bigInt2str(unblindedEnc, 16);
+                    var data1 = JSON.stringify(obj);
+
+                    $.ajax({
+                        url: "http://localhost:3000/keys/blind2",
+                        type: 'POST',
+                        crossDomain: true,
+                        contentType: 'application/json',
+                        data: data1,
+                        success: function (data_blindEnc) {
+                            console.log(data_blindEnc);
+                        },
+                        error: function () {
+                            window.alert("NO FUNCIONA");
+                        }
+                    });
+                },
+                error: function () {
+                    window.alert("NO FUNCIONA");
+                }
+            });
         },
         error: function () {
             window.alert("NO FUNCIONA");
