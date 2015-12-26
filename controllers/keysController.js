@@ -31,6 +31,18 @@ exports.getRSAKey = function (req, res) {
     });
 };
 
+// Get Paillier Key
+exports.getPaillierKey = function (req, res) {
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var mongoKeys = keys[1];
+        var puK = mongoKeys.get("publicKey").bits + "_" + mongoKeys.get("publicKey").n + "_" + mongoKeys.get("publicKey").n2 + "_" + mongoKeys.get("publicKey").g;
+
+        res.status(200).jsonp(puK);
+    });
+};
+
 // Encrypt blinded Kpu User
 exports.encryptBlindKPu = function (req, res) {
     console.log('ENCRYPT Blind User-PublicKey');
@@ -93,7 +105,8 @@ exports.generatePaillierKeys = function (req, res) {
     console.log(mongoKeys);
 
     var key = new Key({
-        keys: mongoKeys
+        publicKey: mongoKeys.publicKey,
+        privateKey: mongoKeys.privateKey
     });
 
 

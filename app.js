@@ -24,6 +24,7 @@ var models = require('./models/studentModel')(app, mongoose);
 var models = require('./models/teacherModel')(app, mongoose);
 var models = require('./models/commentModel')(app, mongoose);
 var models = require('./models/keysModel')(app, mongoose);
+var models = require('./models/voteModel')(app, mongoose);
 var studentController = require('./controllers/studentController');
 var teacherController = require('./controllers/teacherController');
 var commentController = require('./controllers/commentController');
@@ -71,6 +72,12 @@ backend.route('/teachersVotes')
     .get(teacherController.getTeachersMostVoted);
 backend.route('/voteTeacher/:_id')
     .get(teacherController.voteTeacher);
+backend.route('/votes')
+    .get(teacherController.getVotes)
+    .post(teacherController.vote)
+    .delete(teacherController.deleteVotes);
+backend.route('/votes/count')
+    .get(teacherController.countVotes);
 
 backend.route('/comments')
     .get(commentController.getComments)
@@ -87,6 +94,7 @@ backend.route('/keys/blind1')
 backend.route('/keys/blind2')
     .post(keysController.decryptUnblindKPu);
 backend.route('/keys/Paillier')
+    .get(keysController.getPaillierKey)
     .post(keysController.generatePaillierKeys);
 backend.route('/keys/RSA')
     .get(keysController.getRSAKey)

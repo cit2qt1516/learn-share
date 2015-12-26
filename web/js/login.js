@@ -19,40 +19,63 @@ function backoffice() {
 }
 
 $("#LoginBtn").click(function () {
-    var username = $("#username").val();
-    var password = $("#password").val();
 
-
-    if (username != "" && password != "") {
-        if (username == "admin" && password == "admin") {
-            window.location.href = 'backoffice_mensajes.html';
-        } else {
-            var user = new Object();
-            user.username = username;
-            user.password = password;
-            var data = JSON.stringify(user);
+    $.ajax({
+        url: "http://localhost:3000/keys/Paillier",
+        type: 'GET',
+        crossDomain: true,
+        contentType: 'application/json',
+        success: function (data_API) {
+            // Kpu servidor
+            var bits = data_API.split("_")[0];
+            var n = data_API.split("_")[1];
+            var n2 = data_API.split("_")[2];
+            var g = data_API.split("_")[3];
+            var KpuM = new paillier._publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(n2, 10), str2bigInt(g, 10));
 
             $.ajax({
-                url: "http://" + base_URL + "/login",
-                type: 'POST',
+                url: "http://localhost:3000/teacher/raquel",
+                type: 'GET',
                 crossDomain: true,
+                dataType: "json",
                 contentType: 'application/json',
-                dataType: 'json',
-                data: data,
-                success: function (data_API) {
-                    window.localStorage.setItem("username", user.username);
-                    window.localStorage.setItem("userID", data_API.userId);
-                    window.localStorage.setItem("token", data_API.token);
-                    window.location.href = 'index.html';
+                success: function (data) {
+                    var teacher = data;
+                    var id = teacher.id;
+                    console.log("ID profesor: " + id);
+                    var v = Math.pow(2, (id * 6));
+                    var vPaillier = KpuM.encrypt(v.toString());
+
+                    var vote = new Object();
+                    vote.voteC = bigInt2str(vPaillier.c, 10);
+                    vote.voteR = bigInt2str(vPaillier.r, 10);
+                    vote.sign = "fff";
+                    vote.token = "fff";
+                    var data1 = JSON.stringify(vote);
+
+                    $.ajax({
+                        url: "http://localhost:3000/votes",
+                        type: 'POST',
+                        crossDomain: true,
+                        contentType: 'application/json',
+                        data: data1,
+                        success: function (data_blindEnc) {
+                            console.log(data_blindEnc);
+                        },
+                        error: function () {
+                            window.alert("NO FUNCIONA");
+                        }
+                    });
                 },
-                error: function (error_API) {
-                    window.alert(error_API.response);
+                error: function () {
+                    window.alert("NO FUNCIONA");
                 }
             });
+        },
+        error: function () {
+            window.alert("NO FUNCIONA");
         }
-    } else {
-        window.alert("Todos los campos son obligatorios");
-    }
+    });
 });
 
 $("#RegisterBtn").click(function () {
