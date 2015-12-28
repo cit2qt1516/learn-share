@@ -19,9 +19,11 @@ function backoffice() {
 }
 
 $("#LoginBtn").click(function () {
+    var keysUser = rsa.generateKeys(1024);
 
+    // Obtener identidad anonima - FIRMA CIEGA
     $.ajax({
-        url: "http://localhost:3000/keys/Paillier",
+        url: "http://localhost:3000/keys/RSA",
         type: 'GET',
         crossDomain: true,
         contentType: 'application/json',
@@ -29,38 +31,88 @@ $("#LoginBtn").click(function () {
             // Kpu servidor
             var bits = data_API.split("_")[0];
             var n = data_API.split("_")[1];
-            var n2 = data_API.split("_")[2];
-            var g = data_API.split("_")[3];
-            var KpuM = new paillier._publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(n2, 10), str2bigInt(g, 10));
+            var e = data_API.split("_")[2];
+            var KpuVA = new rsa.publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(e, 10));
 
+            // Token de la Kpu del usuario
+            var publicKey = keysUser.publicKey.bits + "AAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAA" + bigInt2str(keysUser.publicKey.n, 10);
+            // Kpu cegada
+            var r = randTruePrime(512);
+            var blindMsg = mod(mult(str2bigInt(publicKey, 16, 0), powMod(r, KpuVA.e, KpuVA.n)), KpuVA.n);
+
+            var k = new Object();
+            k.content = bigInt2str(blindMsg, 16);
+            var data = JSON.stringify(k);
+
+            // Obtener token encriptado y descegar
             $.ajax({
-                url: "http://localhost:3000/teacher/raquel",
-                type: 'GET',
+                url: "http://localhost:3000/keys/blind1",
+                type: 'POST',
                 crossDomain: true,
-                dataType: "json",
                 contentType: 'application/json',
-                success: function (data) {
-                    var teacher = data;
-                    var id = teacher.id;
-                    console.log("ID profesor: " + id);
-                    var v = Math.pow(2, (id * 6));
-                    var vPaillier = KpuM.encrypt(v.toString());
+                data: data,
+                success: function (data_blindEnc) {
+                    var info = data_blindEnc.split("\"")[1];
+                    var blindEnc = str2bigInt(info, 16);
+                    var unblindedEnc = mult(blindEnc, inverseMod(r, KpuVA.n));
 
-                    var vote = new Object();
-                    vote.voteC = bigInt2str(vPaillier.c, 10);
-                    vote.voteR = bigInt2str(vPaillier.r, 10);
-                    vote.sign = "fff";
-                    vote.token = "fff";
-                    var data1 = JSON.stringify(vote);
-
+                    // Encriptar voto con Kpu (Paillier) de la mesa
                     $.ajax({
-                        url: "http://localhost:3000/votes",
-                        type: 'POST',
+                        url: "http://localhost:3000/keys/Paillier",
+                        type: 'GET',
                         crossDomain: true,
                         contentType: 'application/json',
-                        data: data1,
-                        success: function (data_blindEnc) {
-                            console.log(data_blindEnc);
+                        success: function (data_API1) {
+                            // Kpu servidor
+                            var bits = data_API1.split("_")[0];
+                            var n = data_API1.split("_")[1];
+                            var n2 = data_API1.split("_")[2];
+                            var g = data_API1.split("_")[3];
+                            var KpuM = new paillier._publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(n2, 10), str2bigInt(g, 10));
+
+                            // Votar
+                            $.ajax({
+                                url: "http://localhost:3000/teacher/ana",
+                                type: 'GET',
+                                crossDomain: true,
+                                dataType: "json",
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    var teacher = data;
+                                    var id = teacher.id;
+                                    console.log("ID profesor: " + id);
+                                    var v = Math.pow(2, (id * 6));
+                                    var vPaillier = KpuM.encrypt(v.toString());
+
+                                    var r = vPaillier.r;
+                                    var sign = keysUser.privateKey.encryptPrK(r);
+                                    var sign1 = keysUser.publicKey.decryptPuK(sign);
+
+                                    var vote = new Object();
+                                    vote.voteC = bigInt2str(vPaillier.c, 10);
+                                    vote.voteR = bigInt2str(vPaillier.r, 10);
+                                    vote.sign = bigInt2str(sign, 10);
+                                    vote.token = bigInt2str(unblindedEnc, 16);
+                                    var data1 = JSON.stringify(vote);
+
+                                    $.ajax({
+                                        url: "http://localhost:3000/votes",
+                                        type: 'POST',
+                                        crossDomain: true,
+                                        contentType: 'application/json',
+                                        data: data1,
+                                        success: function (data2) {
+                                            console.log(data2);
+                                        },
+                                        error: function () {
+                                            window.alert("NO FUNCIONA");
+                                        }
+                                    });
+                                },
+                                error: function () {
+                                    window.alert("NO FUNCIONA");
+                                }
+                            });
                         },
                         error: function () {
                             window.alert("NO FUNCIONA");

@@ -162,28 +162,50 @@ exports.vote = function (req, res) {
     console.log('VOTE');
     console.log(req.body);
 
-    Vote.findOne({token: req.body.token}, function (err, vote) {
-        if (!vote) {
-            var vote = new Vote({
-                voteC: req.body.voteC,
-                voteR: req.body.voteR,
-                sign: req.body.sign,
-                token: req.body.token
-            });
+    Key.find(function (err, keys) {
+        // Clave RSA servidor
+        var mongoKeys1 = keys[0];
+        var pK1 = new rsa.publicKey(parseInt(mongoKeys1.get("publicKey").bits), bignum(mongoKeys1.get("publicKey").n), bignum(mongoKeys1.get("publicKey").e)); // "get" porque el modelo es "strict: false"
+        var sK1 = new rsa.privateKey(bignum(mongoKeys1.get("privateKey").p), bignum(mongoKeys1.get("privateKey").q), bignum(mongoKeys1.get("privateKey").d), pK1);
 
-            vote.save(function (err) {
-                if (!err)
-                    console.log('Vote added');
-                else
-                    console.log('ERROR', +err);
-            });
+        // Desencriptar token
+        var unblindedEnc = bignum(req.body.token, base = 16);
+        d = pK1.decryptPuK(unblindedEnc);
+        console.log("Decrypted Kpu User: " + d.toString(base = 16));
 
-            res.send(vote._id);
+        dStr = d.toString(base = 16);
+        var pKUser = new rsa.publicKey(parseInt(dStr.split("aaa")[0]), dStr.split("aaa")[2], dStr.split("aaa")[1]);
+        var sign = bignum(req.body.sign, base = 10);
+        console.log("Sign dec: " + pKUser.decryptPuK(sign));
+        console.log("Original: " + req.body.voteR);
+
+        if (pKUser.decryptPuK(sign).eq(bignum(req.body.voteR, base = 10))) {
+            Vote.findOne({token: req.body.token}, function (err, vote) {
+                if (!vote) {
+                    var vote = new Vote({
+                        voteC: req.body.voteC,
+                        voteR: req.body.voteR,
+                        sign: req.body.sign,
+                        token: req.body.token
+                    });
+
+                    vote.save(function (err) {
+                        if (!err)
+                            console.log('Vote added');
+                        else
+                            console.log('ERROR', +err);
+                    });
+
+                    res.send(vote._id);
+                } else {
+                    res.send('Ya se ha votado con este token');
+                }
+            })
         } else {
-            res.send('Ya se ha votado con este token');
+            res.send("El token no es valido");
         }
 
-    })
+    });
 };
 
 // Get all votes
