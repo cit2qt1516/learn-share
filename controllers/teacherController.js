@@ -6,7 +6,7 @@ var Student = mongoose.model('studentModel');
 var Vote = mongoose.model('voteModel');
 var Key = mongoose.model('keysModel');
 var RSA = require('./rsa');
-
+var crypto = require('crypto');
 /*---------------------------------------------------------------------------------*/
 // BASIC CRUD
 
@@ -24,6 +24,9 @@ exports.getTeachers = function (req, res) {
 exports.addTeacher = function (req, res) {
     console.log('POST /teacher');
     console.log(req.body);
+    var name = req.body.username;
+    var pass = req.body.pass;
+    var passEncriptada = encriptar(name, pass);
 
     Teacher.find(function (err, teachers) {
         Teacher.findOne({username: req.body.username}, function (err, teacher) {
@@ -33,7 +36,7 @@ exports.addTeacher = function (req, res) {
                     username: req.body.username,
                     id: teachers.length,
                     email: req.body.email,
-                    pass: req.body.pass,
+                    pass: passEncriptada,
                     subjects: req.body.subjects,
                     votes: 0,
                     lat: req.body.lat,
@@ -276,3 +279,10 @@ exports.countVotes = function (req, res) {
         });
     });
 };
+
+function encriptar(user, pass) {
+
+    // usamos el metodo CreateHmac y le pasamos el parametro user y actualizamos el hash con la password
+    var hmac = crypto.createHmac('sha1', user).update(pass).digest('hex')
+    return hmac
+}

@@ -4,6 +4,7 @@ var sha256 = require('sha256');
 var Student = mongoose.model('studentModel');
 var Teacher = mongoose.model('teacherModel');
 var RSA = require('./rsa');
+var crypto = require('crypto');
 
 /*---------------------------------------------------------------------------------*/
 // BASIC CRUD
@@ -22,6 +23,9 @@ exports.getStudents = function (req, res) {
 exports.addStudent = function (req, res) {
     console.log('POST /student');
     console.log(req.body);
+    var name = req.body.username;
+    var pass = req.body.pass;
+    var passEncriptada = encriptar(name, pass);
 
     Student.findOne({username: req.body.username}, function (err, student) {
         if (!student) {
@@ -29,7 +33,7 @@ exports.addStudent = function (req, res) {
                 name: req.body.name,
                 username: req.body.username,
                 email: req.body.email,
-                pass: req.body.pass,
+                pass: passEncriptada,
                 subjects: req.body.subjects,
                 lat: req.body.lat,
                 long: req.body.long
@@ -117,7 +121,6 @@ function deg2rad(deg) {
 
 exports.findTeacherOffersPlace = function (req, res) {
     Student.findById(req.params._id, function (err, student) {
-        var subjects = student.subjects;
         var latitud = student.lat;
         var longitud = student.long;
         if (err) res.send(500, err.message);
@@ -128,23 +131,53 @@ exports.findTeacherOffersPlace = function (req, res) {
                 teachers[i].distance = distancia;
 
             }
-            //if (distancia <= 30000) {
-            //    var teacher = ({
-            //        name: teachers[i].name,
-            //        id: teachers[i]._id,
-            //        distance: distancia
-            //    });
-            //if (teacher.id != req.params._id) {
-            //
-            //    teachers.push(teacher);
-            //    console.log(JSON.stringify(teachers));
-            //} else {
-            //    res.send("eres tu")
-            //}
-            //}
-
             res.status(200).json(teachers);
         })
     });
 }
 
+function encriptar(user, pass) {
+
+    // usamos el metodo CreateHmac y le pasamos el parametro user y actualizamos el hash con la password
+    var hmac = crypto.createHmac('sha1', user).update(pass).digest('hex')
+    return hmac
+}
+
+//Login
+exports.loginUser = function (req, res) {
+    console.log('LOGIN user');
+
+    var name = req.body.username;
+    var pass = req.body.pass;
+    var passEncriptada = encriptar(name, pass);
+        Student.findOne({"username": name}, function (err, studen) {
+            if (studen) {
+                if (studen.pass == passEncriptada) {
+                    res.json({
+                        userId: studen._id
+                        //username:user.username
+                    });
+                }
+                else
+                    res.send('contrase�a incorrecta')
+
+            } else{
+                Teacher.findOne({username: req.body.username}, function (err, teacher) {
+                    if (teacher) {
+                        if (teacher.pass == passEncriptada) {
+                            res.json({
+                                teacherId: teacher._id
+                                //username:user.username
+                            });
+                        }
+                        else
+                            res.send('contrase�a incorrecta')
+
+                    }
+                })
+                res.send('Ese usuario no existe');
+
+            }
+        });
+
+}
