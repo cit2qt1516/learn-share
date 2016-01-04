@@ -300,3 +300,10 @@ exports.getByNameInv = function (req, res) {
         res.status(200).jsonp(teachers);
     });
 };
+
+exports.getByVotes = function (req, res) {
+    Teacher.find({votes: {$gte:"0"}}).sort("-votes").exec(function (err, teachers) {
+        if (err) res.send(500, err.message);
+        res.status(200).jsonp(teachers);
+    });
+};

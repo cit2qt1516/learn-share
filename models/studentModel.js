@@ -8,7 +8,8 @@ exports = module.exports = function(app, mongoose) {
         lat: 	{ type: String },
         long:  	{ type: String },
         subjects: [{type: String}],
-        hasvoted: [{type: String}]
+        hasvoted: [{type: String}],
+        //avatar: {type: String}
     });
 
     mongoose.model('studentModel', studentSchema);

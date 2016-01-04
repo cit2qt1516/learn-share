@@ -3,7 +3,8 @@ var express = require("express"),
     app = express(),
     bodyParser = require("body-parser"),
     methodOverride = require("method-override"),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    //path = require('path');
 
 // Connection to DB
 mongoose.connect('mongodb://localhost/learnShare', function (err, res) {
@@ -14,6 +15,7 @@ mongoose.connect('mongodb://localhost/learnShare', function (err, res) {
 // Middlewares
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+//app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride());
 app.use(cors());
 
@@ -59,6 +61,8 @@ backend.route('/find/:_id')
     .get(studentController.findTeacherOffersPlace);
 backend.route('/login')
     .post(studentController.loginUser);
+//backend.route('/student/avatar/:_id')
+//    .post(studentController.addImages);
 
 
 backend.route('/teachers')
@@ -86,6 +90,8 @@ backend.route('/teachersName')
 //Orden inverso al Alfabetico Ñapa pero no sabia como hacerlo de una :3
 backend.route('/teachersNameInv')
     .get(teacherController.getByNameInv);
+backend.route('/teachersVot')
+    .get(teacherController.getByVotes);
 
 backend.route('/comments')
     .get(commentController.getComments)

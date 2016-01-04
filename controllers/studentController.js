@@ -5,6 +5,7 @@ var Student = mongoose.model('studentModel');
 var Teacher = mongoose.model('teacherModel');
 var RSA = require('./rsa');
 var crypto = require('crypto');
+var fs = require('fs');
 
 /*---------------------------------------------------------------------------------*/
 // BASIC CRUD
@@ -181,3 +182,51 @@ exports.loginUser = function (req, res) {
         });
 
 }
+
+//exports.addImages = function (req, res) {
+//
+//    req.files.file.name = req.params._id + '.jpg';
+//
+//    var tmp_path = req.files.file.path;
+//
+//    // Ruta donde colocaremos las imagenes
+//    var target_path = './web/avatarUser/' + req.files.file.name;
+//
+//    // Comprobamos que el fichero es de tipo imagen
+//    if (req.files.file.type.indexOf('image') == -1) {
+//        res.send('El fichero que deseas subir no es una imagen');
+//    } else {
+//        // Movemos el fichero temporal tmp_path al directorio que hemos elegido en target_path
+//        fs.rename(tmp_path, target_path, function (err) {
+//            console.log(err);
+//
+//            if (err) throw err;
+//            // Eliminamos el fichero temporal
+//            fs.unlink(tmp_path, function () {
+//                if (err) throw err;
+//
+//                Student.findOneAndUpdate({"_id": req.params._id}, req.body, function (err, student) {
+//
+//                    if (!err) {
+//                        var nom = student._id;
+//                        student.avatar = nom;
+//
+//                        student.save(function (err) {
+//                            if (!err) {
+//                                console.log('Updated');
+//                                res.send('Update')
+//                            }
+//                            else {
+//                                console.log('ERROR' + err);
+//                            }
+//
+//                        })
+//                    }
+//                });
+//
+//            });
+//
+//        });
+//
+//    }
+//};
