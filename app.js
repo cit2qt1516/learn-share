@@ -93,6 +93,10 @@ backend.route('/keys')
     .get(keysController.getKeys);
 backend.route('/keys/blind1')
     .post(keysController.encryptBlindKPu);
+backend.route('/keys/NR')
+    .post(keysController.nonRepudiation);
+backend.route('/keys/NRend')
+    .post(keysController.nonRepudiationStep4);
 backend.route('/keys/blind2')
     .post(keysController.decryptUnblindKPu);
 backend.route('/keys/Paillier')

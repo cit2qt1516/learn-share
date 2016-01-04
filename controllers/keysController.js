@@ -63,7 +63,83 @@ exports.encryptBlindKPu = function (req, res) {
         var bc = sK.encryptPrK(blindMsg);
         console.log("Encrypted Blind: " + bc.toString(base = 16));
 
-        res.status(200).jsonp(bc.toString(base = 16));
+        // La PO será el hash de la información (bc)
+        var POdec = bignum(sha256(bc.toString(base = 16)), base = 16);
+        var PO = sK.encryptPrK(POdec);
+
+        var kPu = pK.bits.toString(base = 10) + "_" + pK.n.toString(base = 10) + "_" + pK.e.toString(base = 10);
+
+        var obj = new Object();
+        obj.bc = bc.toString(base = 16);
+        obj.PO = PO.toString();
+        obj.kPu = kPu;
+
+        res.status(200).jsonp(obj);
+    });
+}
+
+// Non-Repudiation - Steps 2-3
+exports.nonRepudiation = function (req, res) {
+    console.log('NON-REPUDIATION Steps 2-3');
+
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var mongoKeys = keys[0];
+
+        var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
+        var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
+
+        // Step 2
+        var bc = req.body.bc;
+        var PR = req.body.PR;
+        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("AAA")[0]), req.body.kPu.split("AAA")[2], req.body.kPu.split("AAA")[1]);
+
+        if (sha256(bc) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
+            console.log("Step 2 Non-Repudiation -> SUCCESSFUL");
+        else
+            console.log("Step 2 Non-Repudiation -> FAILED");
+
+        // Step 3
+        var r = bignum.prime(512);
+
+        var POdec = bignum(sha256(r.toString()), base = 16);
+        var PO = sK.encryptPrK(POdec);
+
+        var kPu = pK.bits.toString(base = 10) + "_" + pK.n.toString(base = 10) + "_" + pK.e.toString(base = 10);
+
+        var obj = new Object();
+        obj.r = r.toString();
+        obj.PO = PO.toString();
+        obj.kPu = kPu;
+
+        res.status(200).jsonp(obj);
+    });
+}
+
+// Non-Repudiation - Step 4
+exports.nonRepudiationStep4 = function (req, res) {
+    console.log('NON-REPUDIATION Step 4');
+
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var mongoKeys = keys[0];
+
+        var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
+        var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
+
+        // Step 4
+        var r = req.body.r;
+        var PR = req.body.PR;
+        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("AAA")[0]), req.body.kPu.split("AAA")[2], req.body.kPu.split("AAA")[1]);
+
+        if (sha256(r) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
+            console.log("Step 4 Non-Repudiation -> SUCCESSFUL");
+        else
+            console.log("Step 4 Non-Repudiation -> FAILED");
+
+        res.status(200).jsonp("Non-Repudiation COMPLETED");
     });
 }
 
