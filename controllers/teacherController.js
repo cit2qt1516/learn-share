@@ -286,3 +286,17 @@ function encriptar(user, pass) {
     var hmac = crypto.createHmac('sha1', user).update(pass).digest('hex')
     return hmac
 }
+
+exports.getByName = function (req, res) {
+    Teacher.find({username: {$gte:"a"}}).sort("username").exec(function (err, teachers) {
+        if (err) res.send(500, err.message);
+        res.status(200).jsonp(teachers);
+    });
+};
+
+exports.getByNameInv = function (req, res) {
+    Teacher.find({username: {$gte:"a"}}).sort("-username").exec(function (err, teachers) {
+        if (err) res.send(500, err.message);
+        res.status(200).jsonp(teachers);
+    });
+};

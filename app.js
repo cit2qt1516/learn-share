@@ -80,6 +80,12 @@ backend.route('/votes')
     .delete(teacherController.deleteVotes);
 backend.route('/votes/count')
     .get(teacherController.countVotes);
+//Ordena Alfabetecamente
+backend.route('/teachersName')
+    .get(teacherController.getByName);
+//Orden inverso al Alfabetico Ñapa pero no sabia como hacerlo de una :3
+backend.route('/teachersNameInv')
+    .get(teacherController.getByNameInv);
 
 backend.route('/comments')
     .get(commentController.getComments)
