@@ -50,59 +50,121 @@ $("#LoginBtn").click(function () {
                 type: 'POST',
                 crossDomain: true,
                 contentType: 'application/json',
+                dataType: 'json',
                 data: data,
                 success: function (data_blindEnc) {
-                    var info = data_blindEnc.split("\"")[1];
+                    //var info = data_blindEnc.split("\"")[1];
+                    var info = data_blindEnc.bc;
+                    var PO = data_blindEnc.PO;
+                    var kPu = data_blindEnc.kPu;
                     var blindEnc = str2bigInt(info, 16);
                     var unblindedEnc = mult(blindEnc, inverseMod(r, KpuVA.n));
 
-                    // Encriptar voto con Kpu (Paillier) de la mesa
+                    var kPuServer = new rsa.publicKey(str2bigInt(kPu.split("_")[0], 10), str2bigInt(kPu.split("_")[1], 10), str2bigInt(kPu.split("_")[2], 10));
+                    var POdec = kPuServer.decryptPuK(str2bigInt(PO, 10));
+                    // Si el hash de la información y la PO desencriptada son iguales -> OK
+                    if (SHA256_hash(info).toUpperCase() === bigInt2str(POdec, 16))
+                        console.log("Step 1 Non-Repudiation -> SUCCESSFUL");
+                    else
+                        console.log("Step 1 Non-Repudiation -> FAILED");
+
+                    var obj = new Object();
+                    obj.bc = info;
+                    obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(info), 16)), 16);
+                    obj.kPu = publicKey;
+                    var dat = JSON.stringify(obj);
                     $.ajax({
-                        url: "http://localhost:3000/keys/Paillier",
-                        type: 'GET',
+                        url: "http://localhost:3000/keys/NR",
+                        type: 'POST',
                         crossDomain: true,
                         contentType: 'application/json',
-                        success: function (data_API1) {
-                            // Kpu servidor
-                            var bits = data_API1.split("_")[0];
-                            var n = data_API1.split("_")[1];
-                            var n2 = data_API1.split("_")[2];
-                            var g = data_API1.split("_")[3];
-                            var KpuM = new paillier._publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(n2, 10), str2bigInt(g, 10));
+                        dataType: 'json',
+                        data: dat,
+                        success: function (NR) {
+                            var r = NR.r;
+                            var PO = NR.PO;
+                            var kPu = NR.kPu;
 
-                            // Votar
+                            var kPuServer = new rsa.publicKey(str2bigInt(kPu.split("_")[0], 10), str2bigInt(kPu.split("_")[1], 10), str2bigInt(kPu.split("_")[2], 10));
+                            var POdec = kPuServer.decryptPuK(str2bigInt(PO, 10));
+                            if (SHA256_hash(r).toUpperCase() === bigInt2str(POdec, 16))
+                                console.log("Step 3 Non-Repudiation -> SUCCESSFUL");
+                            else
+                                console.log("Step 3 Non-Repudiation -> FAILED");
+
+                            var obj = new Object();
+                            obj.r = r;
+                            obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(r), 16)), 16);
+                            obj.kPu = publicKey;
+                            var dat = JSON.stringify(obj);
+
                             $.ajax({
-                                url: "http://localhost:3000/teacher/ana",
-                                type: 'GET',
+                                url: "http://localhost:3000/keys/NRend",
+                                type: 'POST',
                                 crossDomain: true,
-                                dataType: "json",
                                 contentType: 'application/json',
-                                success: function (data) {
-                                    var teacher = data;
-                                    var id = teacher.id;
-                                    console.log("ID profesor: " + id);
-                                    var v = Math.pow(2, (id * 6));
-                                    var vPaillier = KpuM.encrypt(v.toString());
+                                dataType: 'json',
+                                data: dat,
+                                success: function (NR) {
+                                    console.log(NR);
 
-                                    var r = vPaillier.r;
-                                    var sign = keysUser.privateKey.encryptPrK(r);
-                                    var sign1 = keysUser.publicKey.decryptPuK(sign);
-
-                                    var vote = new Object();
-                                    vote.voteC = bigInt2str(vPaillier.c, 10);
-                                    vote.voteR = bigInt2str(vPaillier.r, 10);
-                                    vote.sign = bigInt2str(sign, 10);
-                                    vote.token = bigInt2str(unblindedEnc, 16);
-                                    var data1 = JSON.stringify(vote);
-
+                                    // Encriptar voto con Kpu (Paillier) de la mesa
                                     $.ajax({
-                                        url: "http://localhost:3000/votes",
-                                        type: 'POST',
+                                        url: "http://localhost:3000/keys/Paillier",
+                                        type: 'GET',
                                         crossDomain: true,
                                         contentType: 'application/json',
-                                        data: data1,
-                                        success: function (data2) {
-                                            console.log(data2);
+                                        success: function (data_API1) {
+                                            // Kpu servidor
+                                            var bits = data_API1.split("_")[0];
+                                            var n = data_API1.split("_")[1];
+                                            var n2 = data_API1.split("_")[2];
+                                            var g = data_API1.split("_")[3];
+                                            var KpuM = new paillier._publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(n2, 10), str2bigInt(g, 10));
+
+                                            // Votar
+                                            $.ajax({
+                                                url: "http://localhost:3000/teacher/ana",
+                                                type: 'GET',
+                                                crossDomain: true,
+                                                dataType: "json",
+                                                contentType: 'application/json',
+                                                success: function (data) {
+                                                    var teacher = data;
+                                                    var id = teacher.id;
+                                                    console.log("ID profesor: " + id);
+                                                    var v = Math.pow(2, (id * 6));
+                                                    var vPaillier = KpuM.encrypt(v.toString());
+
+                                                    var r = vPaillier.r;
+                                                    var sign = keysUser.privateKey.encryptPrK(r);
+                                                    var sign1 = keysUser.publicKey.decryptPuK(sign);
+
+                                                    var vote = new Object();
+                                                    vote.voteC = bigInt2str(vPaillier.c, 10);
+                                                    vote.voteR = bigInt2str(vPaillier.r, 10);
+                                                    vote.sign = bigInt2str(sign, 10);
+                                                    vote.token = bigInt2str(unblindedEnc, 16);
+                                                    var data1 = JSON.stringify(vote);
+
+                                                    $.ajax({
+                                                        url: "http://localhost:3000/votes",
+                                                        type: 'POST',
+                                                        crossDomain: true,
+                                                        contentType: 'application/json',
+                                                        data: data1,
+                                                        success: function (data2) {
+                                                            console.log(data2);
+                                                        },
+                                                        error: function () {
+                                                            window.alert("NO FUNCIONA");
+                                                        }
+                                                    });
+                                                },
+                                                error: function () {
+                                                    window.alert("NO FUNCIONA");
+                                                }
+                                            });
                                         },
                                         error: function () {
                                             window.alert("NO FUNCIONA");
@@ -133,7 +195,6 @@ $("#LoginBtn").click(function () {
 $("#RegisterBtn").click(function () {
     /*var keysUser = rsa.generateKeys(1024);
      var keysVA = rsa.generateKeys(2048);
-
      var publicKey = keysUser.publicKey.bits + "AAAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAAA" + bigInt2str(keysUser.publicKey.n, 10);
      console.log("Message: " + publicKey);
      // Clave pública cegada
@@ -155,13 +216,10 @@ $("#RegisterBtn").click(function () {
      r = bignum.rand(keys.publicKey.n);
      var blindMsg = m.mul(r.powm(keys.publicKey.e, keys.publicKey.n)).mod(keys.publicKey.n);
      console.log('blind msg   m·r^e mod n:', '\n', blindMsg.toBuffer().toString('base64'), '\n');
-
      var bc = keys.privateKey.encrypt(blindMsg);
      console.log('(blind) encryption with private:', '\n', bc.toBuffer().toString('base64'), '\n');
-
      c = bc.mul(r.invertm(keys.publicKey.n));
      console.log('(unblinded) valid encryption    *1/r mod n:', '\n', c.toBuffer().toString('base64'), '\n');
-
      d = keys.publicKey.decrypt(c);
      console.log('decryption with public:', '\n', d.toBuffer().toString(), '\n');*/
 
