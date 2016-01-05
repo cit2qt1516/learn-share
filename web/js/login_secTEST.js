@@ -130,7 +130,7 @@ $("#LoginBtn").click(function () {
 
                                             // Votar
                                             $.ajax({
-                                                url: "http://localhost:3000/teacher/ana",
+                                                url: "http://localhost:3000/teacher/juan",
                                                 type: 'GET',
                                                 crossDomain: true,
                                                 dataType: "json",

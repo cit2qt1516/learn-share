@@ -270,6 +270,7 @@ exports.countVotes = function (req, res) {
 
             var votes = [];
             votes = binRes.match(/.{1,6}/g);
+            votes.reverse();
             for (var i = 0; (i < votes.length); i++) {
                 var numVotes = parseInt(votes[i], 2);
                 console.log("Teacher " + i + " gets " + numVotes + " votes.");
@@ -288,21 +289,21 @@ function encriptar(user, pass) {
 }
 
 exports.getByName = function (req, res) {
-    Teacher.find({username: {$gte:"a"}}).sort("username").exec(function (err, teachers) {
+    Teacher.find({username: {$gte: "a"}}).sort("username").exec(function (err, teachers) {
         if (err) res.send(500, err.message);
         res.status(200).jsonp(teachers);
     });
 };
 
 exports.getByNameInv = function (req, res) {
-    Teacher.find({username: {$gte:"a"}}).sort("-username").exec(function (err, teachers) {
+    Teacher.find({username: {$gte: "a"}}).sort("-username").exec(function (err, teachers) {
         if (err) res.send(500, err.message);
         res.status(200).jsonp(teachers);
     });
 };
 
 exports.getByVotes = function (req, res) {
-    Teacher.find({votes: {$gte:"0"}}).sort("-votes").exec(function (err, teachers) {
+    Teacher.find({votes: {$gte: "0"}}).sort("-votes").exec(function (err, teachers) {
         if (err) res.send(500, err.message);
         res.status(200).jsonp(teachers);
     });
