@@ -35,7 +35,7 @@ $("#LoginBtn").click(function () {
             var KpuVA = new rsa.publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(e, 10));
 
             // Token de la Kpu del usuario
-            var publicKey = keysUser.publicKey.bits + "AAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAA" + bigInt2str(keysUser.publicKey.n, 10);
+            var publicKey = keysUser.publicKey.bits + "ABABAB" + bigInt2str(keysUser.publicKey.e, 10) + "ABABAB" + bigInt2str(keysUser.publicKey.n, 10);
             // Kpu cegada
             var r = randTruePrime(512);
             var blindMsg = mod(mult(str2bigInt(publicKey, 16, 0), powMod(r, KpuVA.e, KpuVA.n)), KpuVA.n);
@@ -57,21 +57,24 @@ $("#LoginBtn").click(function () {
                     var info = data_blindEnc.bc;
                     var PO = data_blindEnc.PO;
                     var kPu = data_blindEnc.kPu;
+                    var user = data_blindEnc.user;
                     var blindEnc = str2bigInt(info, 16);
                     var unblindedEnc = mult(blindEnc, inverseMod(r, KpuVA.n));
 
                     var kPuServer = new rsa.publicKey(str2bigInt(kPu.split("_")[0], 10), str2bigInt(kPu.split("_")[1], 10), str2bigInt(kPu.split("_")[2], 10));
                     var POdec = kPuServer.decryptPuK(str2bigInt(PO, 10));
                     // Si el hash de la información y la PO desencriptada son iguales -> OK
-                    if (SHA256_hash(info).toUpperCase() === bigInt2str(POdec, 16))
+                    if (SHA256_hash(user + info).toUpperCase() === bigInt2str(POdec, 16))
                         console.log("Step 1 Non-Repudiation -> SUCCESSFUL");
                     else
                         console.log("Step 1 Non-Repudiation -> FAILED");
 
+                    var user2 = "david"; // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
                     var obj = new Object();
                     obj.bc = info;
-                    obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(info), 16)), 16);
+                    obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(user2 + info), 16)), 16);
                     obj.kPu = publicKey;
+                    obj.user = user2;
                     var dat = JSON.stringify(obj);
                     $.ajax({
                         url: "http://localhost:3000/keys/NR",
@@ -84,18 +87,21 @@ $("#LoginBtn").click(function () {
                             var r = NR.r;
                             var PO = NR.PO;
                             var kPu = NR.kPu;
+                            var user = NR.user;
 
                             var kPuServer = new rsa.publicKey(str2bigInt(kPu.split("_")[0], 10), str2bigInt(kPu.split("_")[1], 10), str2bigInt(kPu.split("_")[2], 10));
                             var POdec = kPuServer.decryptPuK(str2bigInt(PO, 10));
-                            if (SHA256_hash(r).toUpperCase() === bigInt2str(POdec, 16))
+                            if (SHA256_hash(user + r).toUpperCase() === bigInt2str(POdec, 16))
                                 console.log("Step 3 Non-Repudiation -> SUCCESSFUL");
                             else
                                 console.log("Step 3 Non-Repudiation -> FAILED");
 
+                            var user2 = "david"; // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
                             var obj = new Object();
                             obj.r = r;
-                            obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(r), 16)), 16);
+                            obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(user2 + r), 16)), 16);
                             obj.kPu = publicKey;
+                            obj.user = user2;
                             var dat = JSON.stringify(obj);
 
                             $.ajax({
@@ -195,7 +201,7 @@ $("#LoginBtn").click(function () {
 $("#RegisterBtn").click(function () {
     /*var keysUser = rsa.generateKeys(1024);
      var keysVA = rsa.generateKeys(2048);
-     var publicKey = keysUser.publicKey.bits + "AAAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAAA" + bigInt2str(keysUser.publicKey.n, 10);
+     var publicKey = keysUser.publicKey.bits + "ABABAB" + bigInt2str(keysUser.publicKey.e, 10) + "ABABAB" + bigInt2str(keysUser.publicKey.n, 10);
      console.log("Message: " + publicKey);
      // Clave pública cegada
      var r = randTruePrime(512);
@@ -249,7 +255,7 @@ $("#RegisterBtn").click(function () {
             var KpuVA = new rsa.publicKey(parseInt(bits), str2bigInt(n, 10), str2bigInt(e, 10));
 
             // Token de la Kpu del usuario
-            var publicKey = keysUser.publicKey.bits + "AAA" + bigInt2str(keysUser.publicKey.e, 10) + "AAA" + bigInt2str(keysUser.publicKey.n, 10);
+            var publicKey = keysUser.publicKey.bits + "ABABAB" + bigInt2str(keysUser.publicKey.e, 10) + "ABABAB" + bigInt2str(keysUser.publicKey.n, 10);
             // Kpu cegada
             var r = randTruePrime(512);
             var blindMsg = mod(mult(str2bigInt(publicKey, 16, 0), powMod(r, KpuVA.e, KpuVA.n)), KpuVA.n);

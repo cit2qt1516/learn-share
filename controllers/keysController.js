@@ -63,8 +63,11 @@ exports.encryptBlindKPu = function (req, res) {
         var bc = sK.encryptPrK(blindMsg);
         console.log("Encrypted Blind: " + bc.toString(base = 16));
 
+        var user = "server";
+
         // La PO será el hash de la información (bc)
-        var POdec = bignum(sha256(bc.toString(base = 16)), base = 16);
+        //console.log(user + bc.toString(base = 16));
+        var POdec = bignum(sha256(user + bc.toString(base = 16)), base = 16);
         var PO = sK.encryptPrK(POdec);
 
         var kPu = pK.bits.toString(base = 10) + "_" + pK.n.toString(base = 10) + "_" + pK.e.toString(base = 10);
@@ -73,6 +76,7 @@ exports.encryptBlindKPu = function (req, res) {
         obj.bc = bc.toString(base = 16);
         obj.PO = PO.toString();
         obj.kPu = kPu;
+        obj.user = user;
 
         res.status(200).jsonp(obj);
     });
@@ -93,9 +97,10 @@ exports.nonRepudiation = function (req, res) {
         // Step 2
         var bc = req.body.bc;
         var PR = req.body.PR;
-        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("AAA")[0]), req.body.kPu.split("AAA")[2], req.body.kPu.split("AAA")[1]);
+        var user = req.body.user;
+        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("ABABAB")[0]), req.body.kPu.split("ABABAB")[2], req.body.kPu.split("ABABAB")[1]);
 
-        if (sha256(bc) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
+        if (sha256(user + bc) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
             console.log("Step 2 Non-Repudiation -> SUCCESSFUL");
         else
             console.log("Step 2 Non-Repudiation -> FAILED");
@@ -103,7 +108,9 @@ exports.nonRepudiation = function (req, res) {
         // Step 3
         var r = bignum.prime(512);
 
-        var POdec = bignum(sha256(r.toString()), base = 16);
+        var user2 = "server";
+
+        var POdec = bignum(sha256(user2 + r.toString()), base = 16);
         var PO = sK.encryptPrK(POdec);
 
         var kPu = pK.bits.toString(base = 10) + "_" + pK.n.toString(base = 10) + "_" + pK.e.toString(base = 10);
@@ -112,6 +119,7 @@ exports.nonRepudiation = function (req, res) {
         obj.r = r.toString();
         obj.PO = PO.toString();
         obj.kPu = kPu;
+        obj.user = user2;
 
         res.status(200).jsonp(obj);
     });
@@ -132,9 +140,10 @@ exports.nonRepudiationStep4 = function (req, res) {
         // Step 4
         var r = req.body.r;
         var PR = req.body.PR;
-        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("AAA")[0]), req.body.kPu.split("AAA")[2], req.body.kPu.split("AAA")[1]);
+        var user = req.body.user;
+        var kPuUser = new rsa.publicKey(parseInt(req.body.kPu.split("ABABAB")[0]), req.body.kPu.split("ABABAB")[2], req.body.kPu.split("ABABAB")[1]);
 
-        if (sha256(r) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
+        if (sha256(user + r) === kPuUser.decryptPuK(bignum(PR, base = 16)).toString(base = 16))
             console.log("Step 4 Non-Repudiation -> SUCCESSFUL");
         else
             console.log("Step 4 Non-Repudiation -> FAILED");
@@ -162,7 +171,7 @@ exports.decryptUnblindKPu = function (req, res) {
         console.log("Decrypted: " + d.toString(base = 16));
 
         dStr = d.toString(base = 16);
-        var pKUser = new rsa.publicKey(parseInt(dStr.split("aaa")[0]), dStr.split("aaa")[1], dStr.split("aaa")[2]);
+        var pKUser = new rsa.publicKey(parseInt(dStr.split("ababab")[0]), dStr.split("ababab")[1], dStr.split("ababab")[2]);
         console.log(pKUser);
 
         res.status(200).jsonp(d.toString(base = 16));

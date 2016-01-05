@@ -177,7 +177,7 @@ exports.vote = function (req, res) {
         console.log("Decrypted Kpu User: " + d.toString(base = 16));
 
         dStr = d.toString(base = 16);
-        var pKUser = new rsa.publicKey(parseInt(dStr.split("aaa")[0]), dStr.split("aaa")[2], dStr.split("aaa")[1]);
+        var pKUser = new rsa.publicKey(parseInt(dStr.split("ababab")[0]), dStr.split("ababab")[2], dStr.split("ababab")[1]);
         var sign = bignum(req.body.sign, base = 10);
         console.log("Sign dec: " + pKUser.decryptPuK(sign));
         console.log("Original: " + req.body.voteR);
