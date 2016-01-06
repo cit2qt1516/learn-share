@@ -148,7 +148,7 @@ exports.getTeachersMostVoted = function (req, res) {
     });
 };
 
-// Update a teacher
+// Vote a teacher (without Pallier, just update the counter)
 exports.voteTeacher = function (req, res) {
     var conditions = {_id: req.params._id}
         , update = {$inc: {votes: 1}};
@@ -274,6 +274,15 @@ exports.countVotes = function (req, res) {
             for (var i = 0; (i < votes.length); i++) {
                 var numVotes = parseInt(votes[i], 2);
                 console.log("Teacher " + i + " gets " + numVotes + " votes.");
+
+                Teacher.findOneAndUpdate({"id": i}, {votes: numVotes}, function (err, teacher) {
+                    teacher.set(function (err) {
+                        if (!err)
+                            console.log("Votes from teacher " + i + " updated.");
+                        else
+                            console.log('ERROR' + err);
+                    });
+                });
             }
 
             res.status(200).jsonp(sum.toString());
