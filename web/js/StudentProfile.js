@@ -3,10 +3,11 @@
  */
 
 function getProfile() {
-
+    //TODO poner las cookies bien para jugar
+document.cookie="studentname=paco"
     // GET
     $.ajax({
-        url: "http://localhost:3000/teacher/ana",
+        url: "http://localhost:3000/student/" + getCookie("studentname"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -16,8 +17,11 @@ function getProfile() {
 
             console.log(data);
 
-            $('<h3> <strong> Name: </strong>' + data.name + '</h3>').appendTo($('#user_profile'));
-            $('<h3> <strong> Email: </strong>' + data.email + '</h3>').appendTo($('#user_profile'));
+            $('<h3> <strong> Nombre: </strong>' + data.name + '</h3>').appendTo($('#student_profile'));
+            $('<h3> <strong> Username: </strong>' + data.username + '</h3>').appendTo($('#student_profile'));
+            $('<h3> <strong> Email: </strong>' + data.email + '</h3>').appendTo($('#student_profile'));
+            $('<h3> <strong> Asignaturas: </strong>' + data.subjects + '</h3>').appendTo($('#student_profile'));
+
 
         },
         error: function () {
