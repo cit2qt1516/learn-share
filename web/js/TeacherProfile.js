@@ -24,7 +24,53 @@ function getProfile() {
             $('<h3> <strong> Asignaturas: </strong>' + data.subjects + '</h3>').appendTo($('#teacher_profile'));
             $('<h3> <strong> Votos: </strong>' + data.votes + '</h3>').appendTo($('#teacher_profile'));
 
+        },
+        error: function () {
+            window.alert("NO FUNCIONA");
+        }
+    });
+    $.ajax({
+        url: "http://localhost:3000/comments/" + getCookie("teachername"),
+        type: 'GET',
+        crossDomain: true,
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (data) {
 
+            $('<h3> <strong> Comentarios: </strong>').appendTo($('#teacher_profile'));
+
+            console.log(data[1]);
+            for(var i=0; i<data.length; i++){
+                $('<h3> <strong> Nombre: </strong>' + data[i].student + ' '+ data[i].time +'</h3>' ).appendTo($('#teacher_profile'));
+                $('<p>'+data[i].content +'</p>').appendTo($('#teacher_profile'));
+
+            }
+
+        },
+        error: function () {
+            window.alert("NO FUNCIONA");
+        }
+    });
+
+}
+function  PostComment(){
+    //TODO PONER LOS CAMPOS BIEN
+    var k = new Object();
+    k.content = "Lucia";
+    k.student = "lucia";
+    k.teacher = "juan"
+    var data = JSON.stringify(k);
+
+    $.ajax({
+        url: "http://localhost:3000/comments",
+        type: 'POST',
+        crossDomain: true,
+        dataType: "json",
+        contentType: 'application/json',
+        data: data,
+        success: function (data) {
+
+            window.alert("FUNCIONA");
         },
         error: function () {
             window.alert("NO FUNCIONA");
