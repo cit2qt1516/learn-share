@@ -89,9 +89,7 @@ exports.deleteStudent = function (req, res) {
 
 // Get student by username
 exports.findByUsername = function (req, res) {
-    var user = "username:" + req.params._id;
-
-    Student.findOne(user, function (err, student) {
+    Student.findOne({username: req.params._id}, function (err, student) {
         if (!err) {
             res.send(student);
         }
@@ -127,7 +125,7 @@ exports.findTeacherOffersPlace = function (req, res) {
         if (err) res.send(500, err.message);
         console.log(student.subjects);
         Teacher.find({"subjects": {$in: student.subjects}}, function (err, teachers) {
-            for ( var i = 0; i < teachers.length; i++) {
+            for (var i = 0; i < teachers.length; i++) {
                 var distancia = getDistanceFromLatLonInKm(latitud, longitud, teachers[i].lat, teachers[i].long);
                 teachers[i].distance = distancia;
 
@@ -151,35 +149,35 @@ exports.loginUser = function (req, res) {
     var name = req.body.username;
     var pass = req.body.pass;
     var passEncriptada = encriptar(name, pass);
-        Student.findOne({"username": name}, function (err, studen) {
-            if (studen) {
-                if (studen.pass == passEncriptada) {
-                    res.json({
-                        userId: studen._id
-                        //username:user.username
-                    });
-                }
-                else
-                    res.send('contrase�a incorrecta')
-
-            } else{
-                Teacher.findOne({username: req.body.username}, function (err, teacher) {
-                    if (teacher) {
-                        if (teacher.pass == passEncriptada) {
-                            res.json({
-                                teacherId: teacher._id
-                                //username:user.username
-                            });
-                        }
-                        else
-                            res.send('contrase�a incorrecta')
-
-                    }
-                })
-                res.send('Ese usuario no existe');
-
+    Student.findOne({"username": name}, function (err, studen) {
+        if (studen) {
+            if (studen.pass == passEncriptada) {
+                res.json({
+                    userId: studen._id
+                    //username:user.username
+                });
             }
-        });
+            else
+                res.send('contrase�a incorrecta')
+
+        } else {
+            Teacher.findOne({username: req.body.username}, function (err, teacher) {
+                if (teacher) {
+                    if (teacher.pass == passEncriptada) {
+                        res.json({
+                            teacherId: teacher._id
+                            //username:user.username
+                        });
+                    }
+                    else
+                        res.send('contrase�a incorrecta')
+
+                }
+            })
+            res.send('Ese usuario no existe');
+
+        }
+    });
 
 }
 
