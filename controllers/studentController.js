@@ -153,7 +153,8 @@ exports.loginUser = function (req, res) {
         if (studen) {
             if (studen.pass == passEncriptada) {
                 res.json({
-                    userId: studen._id
+                    userId: studen._id,
+                    username: studen.username,
                     //username:user.username
                 });
             }
@@ -165,7 +166,8 @@ exports.loginUser = function (req, res) {
                 if (teacher) {
                     if (teacher.pass == passEncriptada) {
                         res.json({
-                            teacherId: teacher._id
+                            teacherId: teacher._id,
+                            username: teacher.username,
                             //username:user.username
                         });
                     }

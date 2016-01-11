@@ -4,10 +4,10 @@
 
 function getProfile() {
     //TODO poner las cookies bien para jugar
-document.cookie="studentname=paco"
+document.cookie="studentUsername=paco"
     // GET
     $.ajax({
-        url: "http://localhost:3000/student/" + getCookie("studentname"),
+        url: "http://localhost:3000/student/" + getCookie("studentUsername"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",

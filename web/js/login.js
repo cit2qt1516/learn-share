@@ -19,12 +19,20 @@ function LoginProfile() {
         data: data,
         success: function (data) {
             console.log(data);
-            //window.alert(data);
+            setCookie("username",data.username,"1");
+            console.log(getCookie("username"));
         },
         error: function () {
             window.alert("NO FUNCIONA");
         }
     });
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
 function getCookie(cname) {

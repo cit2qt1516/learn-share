@@ -2,11 +2,11 @@
  * Created by alfredo on 10/01/16.
  */
     //TODO poner las cookies bien para jugar
-document.cookie="studentname=5670112c87de8b0325000001"
+document.cookie="studentID=5670112c87de8b0325000001"
 function GetTeachers() {
 
     $.ajax({
-        url: "http://localhost:3000/teachers" + getCookie("studentname"),
+        url: "http://localhost:3000/teachers/" + getCookie("studentID"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -19,6 +19,8 @@ function GetTeachers() {
                 $('<h3> <strong> Nombre: </strong>' + data[i].name + '</h3>').appendTo($('#teacher_profile'));
                 $('<h3> <strong> Asignaturas: </strong>' + data[i].subjects[0] + '</h3>').appendTo($('#teacher_profile'));
                 $('<h3> <strong> Votos: </strong>' + data[i].votes + '</h3>').appendTo($('#teacher_profile'));
+                setCookie("teacherUsernames",data[i].username,"1");
+                console.log(getCookie("teachersUsernames"));
             }
 
         },
@@ -30,7 +32,7 @@ function GetTeachers() {
 function GetTeachersByDistance() {
 
     $.ajax({
-        url: "http://localhost:3000/find/"+ getCookie("studentname"),
+        url: "http://localhost:3000/find/"+ getCookie("studentiD"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -125,6 +127,13 @@ function GetTeachersByNameInv() {
             window.alert("NO FUNCIONA");
         }
     });
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
 function getCookie(cname) {

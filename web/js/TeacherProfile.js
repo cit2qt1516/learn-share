@@ -5,10 +5,10 @@
 function getProfile() {
 
     //TODO poner las cookies bien para jugar
-    document.cookie = "teachername=juan"
+    document.cookie = "teacherUsername=juan"
     // GET
     $.ajax({
-        url: "http://localhost:3000/teacher/" + getCookie("teachername"),
+        url: "http://localhost:3000/teacher/" + getCookie("teacherUsername"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -30,7 +30,7 @@ function getProfile() {
         }
     });
     $.ajax({
-        url: "http://localhost:3000/comments/" + getCookie("teachername"),
+        url: "http://localhost:3000/comments/" + getCookie("teacherUsername"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
