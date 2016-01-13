@@ -7,9 +7,6 @@ var Key = mongoose.model('keysModel');
 var RSA = require('./rsa');
 var Paillier = require('./paillier');
 
-/*---------------------------------------------------------------------------------*/
-// BASIC CRUD
-
 // Get all keys
 exports.getKeys = function (req, res) {
     Key.find(function (err, keys) {
@@ -24,7 +21,12 @@ exports.getRSAKey = function (req, res) {
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var mongoKeys = keys[0];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys = keys[i];
+        }
+
         var puK = mongoKeys.get("publicKey").bits + "_" + mongoKeys.get("publicKey").n + "_" + mongoKeys.get("publicKey").e;
 
         res.status(200).jsonp(puK);
@@ -36,7 +38,11 @@ exports.getPaillierKey = function (req, res) {
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var mongoKeys = keys[1];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "Paillier")
+                mongoKeys = keys[i];
+        }
         var puK = mongoKeys.get("publicKey").bits + "_" + mongoKeys.get("publicKey").n + "_" + mongoKeys.get("publicKey").n2 + "_" + mongoKeys.get("publicKey").g;
 
         res.status(200).jsonp(puK);
@@ -52,10 +58,11 @@ exports.encryptBlindKPu = function (req, res) {
 
         var blindMsg = bignum(req.body.content, base = 16);
 
-        //var k = RSA.generateKeysFromMongo(keys[0]);
-        //console.log("CLAVE RSA : " + k);
-
-        var mongoKeys = keys[0];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys = keys[i];
+        }
 
         var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
         var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
@@ -89,7 +96,11 @@ exports.nonRepudiation = function (req, res) {
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var mongoKeys = keys[0];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys = keys[i];
+        }
 
         var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
         var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
@@ -132,7 +143,11 @@ exports.nonRepudiationStep4 = function (req, res) {
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var mongoKeys = keys[0];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys = keys[i];
+        }
 
         var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
         var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
@@ -161,7 +176,11 @@ exports.decryptUnblindKPu = function (req, res) {
 
         var unblindedEnc = bignum(req.body.content, base = 16);
 
-        var mongoKeys = keys[0];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys = keys[i];
+        }
 
         var pK = new rsa.publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").e)); // "get" porque el modelo es "strict: false"
         var sK = new rsa.privateKey(bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), bignum(mongoKeys.get("privateKey").d), pK);
@@ -191,7 +210,8 @@ exports.generatePaillierKeys = function (req, res) {
 
     var key = new Key({
         publicKey: mongoKeys.publicKey,
-        privateKey: mongoKeys.privateKey
+        privateKey: mongoKeys.privateKey,
+        def: "Paillier"
     });
 
 
@@ -223,7 +243,8 @@ exports.generateRSAKeys = function (req, res) {
 
     var key = new Key({
         publicKey: mongoKeys.publicKey,
-        privateKey: mongoKeys.privateKey
+        privateKey: mongoKeys.privateKey,
+        def: "RSA"
     });
 
 
@@ -254,3 +275,62 @@ exports.deleteKey = function (req, res) {
     });
     res.status(200).send('Delete');
 };
+
+// Get user RSA Key
+exports.getUserKey = function (req, res) {
+    console.log('GET /key');
+    Key.find(function (err, keys) {
+        if (err) res.send(500, err.message);
+
+        var found = 0;
+        var j = 0;
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("user") === req.params._id) {
+                found = 1;
+                j = i;
+            }
+        }
+
+        if (found == 1) {
+            console.log("Key found");
+            res.status(200).jsonp(keys[j]);
+        } else {
+            console.log("The user does not have a key");
+            res.status(200).jsonp("The user does not have a key");
+        }
+    });
+};
+
+// Post a user key
+exports.postUserKey = function (req, res) {
+    console.log('POST /key');
+
+    console.log(req.params._id);
+
+    Key.findOne({user: req.params._id}, function (err, keys) {
+        if (!keys) {
+            var key = new Key({
+                bits: req.body.bits,
+                n: req.body.n,
+                e: req.body.e,
+                p: req.body.p,
+                q: req.body.q,
+                d: req.body.d,
+                user: req.params._id,
+                def: "user"
+            });
+
+            key.save(function (err) {
+                if (!err)
+                    console.log('Key added');
+                else
+                    console.log('ERROR', +err);
+            });
+
+            res.send(key._id);
+        } else {
+            res.send('Ya existe una clave');
+        }
+
+    })
+}

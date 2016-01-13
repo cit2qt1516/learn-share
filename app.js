@@ -4,7 +4,7 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     methodOverride = require("method-override"),
     mongoose = require('mongoose');
-    //path = require('path');
+//path = require('path');
 
 // Connection to DB
 mongoose.connect('mongodb://localhost/learnShare', function (err, res) {
@@ -118,6 +118,8 @@ backend.route('/keys/RSA')
     .get(keysController.getRSAKey)
     .post(keysController.generateRSAKeys);
 backend.route('/keys/:_id')
+    .get(keysController.getUserKey)
+    .post(keysController.postUserKey)
     .delete(keysController.deleteKey);
 
 /*backend.route('/nrttp/:id')

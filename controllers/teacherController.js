@@ -167,7 +167,11 @@ exports.vote = function (req, res) {
 
     Key.find(function (err, keys) {
         // Clave RSA servidor
-        var mongoKeys1 = keys[0];
+        var mongoKeys1 = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "RSA")
+                mongoKeys1 = keys[i];
+        }
         var pK1 = new rsa.publicKey(parseInt(mongoKeys1.get("publicKey").bits), bignum(mongoKeys1.get("publicKey").n), bignum(mongoKeys1.get("publicKey").e)); // "get" porque el modelo es "strict: false"
         var sK1 = new rsa.privateKey(bignum(mongoKeys1.get("privateKey").p), bignum(mongoKeys1.get("privateKey").q), bignum(mongoKeys1.get("privateKey").d), pK1);
 
@@ -241,7 +245,11 @@ exports.countVotes = function (req, res) {
     Key.find(function (err, keys) {
         if (err) res.send(500, err.message);
 
-        var mongoKeys = keys[1];
+        var mongoKeys = "";
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i].get("def") === "Paillier")
+                mongoKeys = keys[i];
+        }
 
         var pK = new paillier._publicKey(parseInt(mongoKeys.get("publicKey").bits), bignum(mongoKeys.get("publicKey").n), bignum(mongoKeys.get("publicKey").n2), bignum(mongoKeys.get("publicKey").g)); // "get" porque el modelo es "strict: false"
         var sK = new paillier._privateKey(bignum(mongoKeys.get("privateKey").lambda), bignum(mongoKeys.get("privateKey").mu), bignum(mongoKeys.get("privateKey").p), bignum(mongoKeys.get("privateKey").q), pK);
