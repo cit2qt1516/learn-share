@@ -1,8 +1,5 @@
 function getProfile() {
-    //TODO poner las cookies bien para jugar
-    document.cookie = "teacherUsername=juan"
-
-    // GET
+    // GET perfil profesor
     $.ajax({
         url: "http://localhost:3000/teacher/" + getCookie("teacherUsername"),
         type: 'GET',
@@ -24,6 +21,7 @@ function getProfile() {
         }
     });
 
+    // GET comentarios profesor
     $.ajax({
         url: "http://localhost:3000/comments/" + getCookie("teacherUsername"),
         type: 'GET',
@@ -49,8 +47,8 @@ function getProfile() {
 function postComment() {
     var k = new Object();
     k.content = $('#comment').val();
-    k.student = "david";
-    k.teacher = "juan"
+    k.student = getCookie("studentUsername");
+    k.teacher = getCookie("teacherUsername");
     var data = JSON.stringify(k);
 
     $.ajax({
@@ -232,7 +230,7 @@ function vote() {
 
                                                     // Votar
                                                     $.ajax({
-                                                        url: "http://localhost:3000/teacher/raquel",
+                                                        url: "http://localhost:3000/teacher/" + getCookie("teacherUsername"),
                                                         type: 'GET',
                                                         crossDomain: true,
                                                         dataType: "json",
