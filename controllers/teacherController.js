@@ -61,10 +61,8 @@ exports.addTeacher = function (req, res) {
 
 // Update a teacher
 exports.updateTeacher = function (req, res) {
-    console.log(req.body);
     Teacher.findOneAndUpdate({username: req.params._id}, req.body, function (err, teacher) {
         console.log("UPDATE");
-        console.log(teacher);
         teacher.set(function (err) {
             if (!err) {
                 console.log('Updated');

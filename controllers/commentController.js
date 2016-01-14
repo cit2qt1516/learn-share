@@ -22,7 +22,6 @@ exports.getComments = function (req, res) {
 // Create comment account
 exports.addComment = function (req, res) {
     console.log('POST /comment');
-    console.log(req.body);
 
     var today = new Date();
     var date = today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear() + " " + today.getHours() + ":" + today.getMinutes();
@@ -78,7 +77,7 @@ exports.deleteComment = function (req, res) {
 
 // Get comment by teacher
 exports.findByTeacher = function (req, res) {
-    Comment.find({"teacher" : req.params._id}, function (err, comments) {
+    Comment.find({"teacher": req.params._id}, function (err, comments) {
         if (!err) {
             res.send(comments);
         }
