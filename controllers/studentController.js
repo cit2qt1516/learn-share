@@ -57,7 +57,7 @@ exports.addStudent = function (req, res) {
 
 // Update an existent student
 exports.updateStudent = function (req, res) {
-    Student.findOneAndUpdate({"_id": req.params._id}, req.body, function (err, student) {
+    Student.findOneAndUpdate({username: req.params._id}, req.body, function (err, student) {
         console.log("UPDATE");
         student.set(function (err) {
             if (!err) {
