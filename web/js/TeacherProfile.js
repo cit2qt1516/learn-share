@@ -126,8 +126,6 @@ function vote() {
                 crossDomain: true,
                 contentType: 'application/json',
                 success: function (data_API) {
-
-                    console.log("1 -> " + keysUser);
                     // Kpu servidor
                     var bits = data_API.split("_")[0];
                     var n = data_API.split("_")[1];
