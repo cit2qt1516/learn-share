@@ -2,46 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Actualizar perfil</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <title>LearnShare</title>
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Map -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
 </head>
-<!--<body onload="PostProfile();">-->
 
-<div class="container theme-showcase" role="main">
-
-    <form action="javascript:updateProfile();">
-        Nombre: <input type="text" id="name"><br>
-        Email: <input type="email" id="email"><br>
-        <input type="submit" value="Enviar">
-    </form>
-
-    <div id="panel">
-        <input id="address" type="textbox" value="EETAC, Castelldefels">
-        <input type="button" value="Geocode" onclick="codeAddress()">
+<body>
+<nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand">LearnShare</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
     </div>
+</nav>
 
-    <div id="map-canvas" style="width: 400px; height: 400px"></div>
+<div class="container">
+    <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-xs-12 col-sm-12">
+            <div class="jumbotron">
+                <h1>Página principal</h1>
 
-    <input id="location" disabled="true" style="width: 100%">
+                <p>Esta es la página principal del perfil de estudiante...</p>
+            </div>
+            <div class="row">
+                <div class="container theme-showcase" role="main">
+
+                    <form action="javascript:updateProfile();">
+                        Nombre: <input class="form-control" style="width: 20%" type="text" id="name"><br>
+                        Email: <input class="form-control" style="width: 20%" type="email" id="email"><br>
+                        <input type="submit" value="Enviar">
+                    </form>
+
+                    <div id="panel">
+                        <input class="form-control" style="width: 20%" id="address" type="textbox"
+                               value="EETAC, Castelldefels">
+                        <input type="button" value="Geocode" onclick="codeAddress()">
+                    </div>
+
+                    <div id="map-canvas" style="width: 400px; height: 400px"></div>
+
+                    <input class="form-control" style="width: 20%" id="location" disabled="true">
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
-
+<!-- ================================================== -->
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
+<!-- Include all compiled plugins (below), or include individual files as needed -->
 <script type=" text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
-
-<!-- Event and AJAX functions -->
+<script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/UpdateTeacherProfile.js"></script>
 </body>
 </html>
