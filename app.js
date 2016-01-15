@@ -57,6 +57,8 @@ backend.route('/student/:_id')
     .get(studentController.findByUsername)
     .put(studentController.updateStudent)
     .delete(studentController.deleteStudent);
+backend.route('/studentVotes/:_id')
+    .put(studentController.updateVoteStudent);
 backend.route('/find/:_id')
     .get(studentController.findTeacherOffersPlace);
 backend.route('/login')

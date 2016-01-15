@@ -9,6 +9,7 @@ exports = module.exports = function(app, mongoose) {
         long:  	{ type: String },
         subjects: [{type: String}],
         hasvoted: [{type: String}],
+        profile: { type: String }
         //avatar: {type: String}
     });
 

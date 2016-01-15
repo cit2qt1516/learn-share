@@ -1,3 +1,8 @@
+window.onload = function () {
+    document.cookie = "studentUsername=david";
+    getProfile();
+};
+
 function getProfile() {
     // GET perfil profesor
     $.ajax({
@@ -36,6 +41,24 @@ function getProfile() {
                 $('<h3> <strong>' + data[i].student + '</strong> ' + data[i].time + '</h2>').appendTo($('#teacher_profile'));
                 $('<p>' + data[i].content + '</p>').appendTo($('#teacher_profile'));
 
+            }
+        },
+        error: function () {
+            window.alert("NO FUNCIONA");
+        }
+    });
+
+    // GET perfil propio
+    $.ajax({
+        url: "http://localhost:3000/student/" + getCookie("studentUsername"),
+        type: 'GET',
+        crossDomain: true,
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (data) {
+            if (data.hasvoted.indexOf(getCookie("teacherUsername")) != -1) {
+            } else {
+                $("#voteButton").prop("disabled", false);
             }
         },
         error: function () {
@@ -259,6 +282,25 @@ function vote() {
                                                                 data: data1,
                                                                 success: function (data2) {
                                                                     console.log(data2);
+
+                                                                    var v = new Object();
+                                                                    v.teacher = getCookie("teacherUsername");
+                                                                    var dataVote = JSON.stringify(v);
+
+                                                                    $.ajax({
+                                                                        url: "http://localhost:3000/studentVotes/" + getCookie("studentUsername"),
+                                                                        type: 'PUT',
+                                                                        crossDomain: true,
+                                                                        contentType: 'application/json',
+                                                                        data: dataVote,
+                                                                        success: function (data) {
+                                                                            console.log(data);
+                                                                            $("#voteButton").prop("disabled", true);
+                                                                        },
+                                                                        error: function () {
+                                                                            window.alert("NO FUNCIONA");
+                                                                        }
+                                                                    });
                                                                 },
                                                                 error: function () {
                                                                     window.alert("NO FUNCIONA");

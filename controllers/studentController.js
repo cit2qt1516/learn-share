@@ -36,6 +36,7 @@ exports.addStudent = function (req, res) {
                 email: req.body.email,
                 pass: passEncriptada,
                 subjects: req.body.subjects,
+                profile: "student",
                 lat: req.body.lat,
                 long: req.body.long
             });
@@ -96,6 +97,27 @@ exports.findByUsername = function (req, res) {
         else {
             console.log('ERROR: ' + err);
         }
+    });
+};
+
+// Update the teachers a student has voted
+exports.updateVoteStudent = function (req, res) {
+    Student.findOne({username: req.params._id}, function (err, student) {
+        console.log("UPDATE VOTES");
+        student.hasvoted[student.hasvoted.length] = req.body.teacher;
+        var s = new Object();
+        s.hasvoted = student.hasvoted;
+        Student.findOneAndUpdate({username: req.params._id}, s, function (err, stud) {
+            stud.set(function (err) {
+                if (!err) {
+                    console.log('Votes updated');
+                }
+                else {
+                    console.log('ERROR' + err);
+                }
+            });
+        });
+        res.send('Votes updated');
     });
 };
 

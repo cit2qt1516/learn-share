@@ -15,9 +15,14 @@
             text-align: center;
             text-decoration: underline;
         }
+
+        button[disabled=disabled], button:disabled {
+            background-color: #eeeeee;
+            color: #cccccc;
+        }
     </style>
 </head>
-<body onload="getProfile();">
+<!--<body onload="getProfile();">-->
 
 <div class="container theme-showcase" role="main">
 
@@ -28,7 +33,10 @@
                     <h3 class="panel-title">Datos de Usuario</h3>
                 </div>
                 <div class="panel-body">
-                    <button onclick="vote()" style="float: right; font-size: x-large"> VOTAR</button>
+                    <button onclick="vote()" style="float: right; font-size: x-large; :disabled" id="voteButton"
+                            disabled="true">
+                        VOTAR
+                    </button>
                     <span id="teacher_profile"></span>
                 </div>
             </div>

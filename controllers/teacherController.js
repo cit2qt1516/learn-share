@@ -39,6 +39,7 @@ exports.addTeacher = function (req, res) {
                     pass: passEncriptada,
                     subjects: req.body.subjects,
                     votes: 0,
+                    profile: "teacher",
                     lat: req.body.lat,
                     long: req.body.long
                 });

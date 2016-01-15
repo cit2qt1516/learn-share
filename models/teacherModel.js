@@ -10,7 +10,8 @@ exports = module.exports = function(app, mongoose) {
         long:  	{ type: String },
         subjects: [{type: String}],
         votes: { type: Number },
-        distance : {type:Number}
+        distance : {type:Number},
+        profile: { type: String }
     });
 
     mongoose.model('teacherModel', teacherSchema);
