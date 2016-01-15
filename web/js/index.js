@@ -21,7 +21,7 @@ function GetTeachers() {
             }
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("No se ha obtenido la lista de profesores");
         }
     });
 }
@@ -40,7 +40,7 @@ function GetTopTeachers() {
             }
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("No se ha obtenido el Top de profesores");
         }
     });
 }

@@ -1,5 +1,6 @@
 window.onload = function () {
     document.cookie = "studentUsername=david";
+    document.cookie = "profile=student";
     getProfile();
 };
 
@@ -22,7 +23,7 @@ function getProfile() {
 
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("No se obtuvo el perfil del profesor");
         }
     });
 
@@ -44,25 +45,27 @@ function getProfile() {
             }
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("No se obtuvieron los comentarios del profesor");
         }
     });
 
     // GET perfil propio
     $.ajax({
-        url: "http://localhost:3000/student/" + getCookie("studentUsername"),
+        url: "http://localhost:3000/" + getCookie("profile") + "/" + getCookie("studentUsername"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
         contentType: 'application/json',
         success: function (data) {
-            if (data.hasvoted.indexOf(getCookie("teacherUsername")) != -1) {
+            if (getCookie("profile") === "teacher") {
+                $("#voteButton").remove();
             } else {
-                $("#voteButton").prop("disabled", false);
+                if (data.hasvoted.indexOf(getCookie("teacherUsername")) == -1)
+                    $("#voteButton").prop("disabled", false);
             }
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("No se obtuvo tu perfil");
         }
     });
 }
