@@ -129,7 +129,7 @@ exports.getTeachersBySubject = function (req, res) {
 exports.getTeachersMostVoted = function (req, res) {
     console.log('GET the most voted teachers for each subject');
 
-    var subjects = ["Historia", "Música"];
+    var subjects = ["Historia", "Música", "Matemáticas", "Física", "Química", "Dibujo", "Filosofía", "Literatura", "Programación", "Tecnología"];
     var teachers = [];
 
     Teacher.find({"subjects": {$in: subjects}}).sort("-votes").exec(function (err, teacher) {
