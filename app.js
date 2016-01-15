@@ -92,6 +92,8 @@ backend.route('/teachersNameInv')
     .get(teacherController.getByNameInv);
 backend.route('/teachersVot')
     .get(teacherController.getByVotes);
+backend.route('/techersSubject')
+    .get(teacherController.getTeachersBySubjectName);
 
 backend.route('/comments')
     .get(commentController.getComments)
