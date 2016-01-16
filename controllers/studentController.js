@@ -176,7 +176,7 @@ exports.loginUser = function (req, res) {
         if (student) {
             if (student.pass == passEncriptada) {
                 res.status(200).jsonp({
-                    userId: student._id,
+                    ID: student._id,
                     username: student.username,
                     profile: student.profile
                     //username:user.username
@@ -191,7 +191,7 @@ exports.loginUser = function (req, res) {
                 if (teacher) {
                     if (teacher.pass == passEncriptada) {
                         res.status(200).jsonp({
-                            teacherId: teacher._id,
+                            ID: teacher._id,
                             username: teacher.username,
                             profile: teacher.profile
                             //username:user.username
