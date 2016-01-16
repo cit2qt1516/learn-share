@@ -307,9 +307,29 @@ function encriptar(user, pass) {
 }
 
 exports.getByName = function (req, res) {
-    Teacher.find({username: {$gte: "a"}}).sort("username").exec(function (err, teachers) {
+    //Teacher.find({username: {$gte: "a"}}).sort("username").exec(function (err, teachers) {
+    //    if (err) res.send(500, err.message);
+    //    res.status(200).jsonp(teachers);
+    //});
+    Student.findById(req.params._id, function (err, student) {
         if (err) res.send(500, err.message);
-        res.status(200).jsonp(teachers);
+        console.log(student.subjects);
+
+        var teachers = [];
+
+        Teacher.find({username: {$gte: "a"}}).sort("username").exec(function (err, teacher) {
+            if (err) res.send(500, err.message);
+
+            for (var j = 0; j < teacher.length; j++) {
+                for (var i = 0; i<student.subjects.length; i++){
+                    if(teacher[j].subjects ==student.subjects[i]) {
+                        teachers.push(teacher[j]);
+                    }
+                }
+            }
+
+            res.status(200).jsonp(teachers);
+        });
     });
 };
 
@@ -321,36 +341,61 @@ exports.getByNameInv = function (req, res) {
 };
 
 exports.getByVotes = function (req, res) {
-    Teacher.find({votes: {$gte: "0"}}).sort("-votes").exec(function (err, teachers) {
+    //Teacher.find({votes: {$gte: "0"}}).sort("-votes").exec(function (err, teachers) {
+    //    if (err) res.send(500, err.message);
+    //    res.status(200).jsonp(teachers);
+    //});
+    Student.findById(req.params._id, function (err, student) {
         if (err) res.send(500, err.message);
-        res.status(200).jsonp(teachers);
-    });
-};
+        console.log(student.subjects);
 
-exports.getTeachersBySubjectName = function (req, res) {
-    Teacher.find({subjects: {$gte: "A"}}).sort("subjects").exec(function (err, teachers) {
-        if (err) res.send(500, err.message);
-        res.status(200).jsonp(teachers);
+        var teachers = [];
+
+        Teacher.find({votes: {$gte: "0"}}).sort("-votes").exec(function (err, teacher) {
+            if (err) res.send(500, err.message);
+
+            for (var j = 0; j < teacher.length; j++) {
+                for (var i = 0; i<student.subjects.length; i++){
+                    if(teacher[j].subjects ==student.subjects[i]) {
+                        teachers.push(teacher[j]);
+                    }
+                }
+            }
+
+            res.status(200).jsonp(teachers);
+        });
     });
 };
 
 //exports.getTeachersBySubjectName = function (req, res) {
-//    console.log('GET teachers that teach a subject name');
-//
-//    Student.findById(req.params._id, function (err, student) {
+//    Teacher.find({subjects: {$gte: "A"}}).sort("subjects").exec(function (err, teachers) {
 //        if (err) res.send(500, err.message);
-//        console.log(student.subjects);
-//
-//        var teachers = [];
-//
-//        Teacher.find({"subjects": {$in: student.subjects}},{username: {$gte: "a"}}).sort("username").exec(function (err, teachers) {
-//            if (err) res.send(500, err.message);
-//
-//            for (var j = 0; j < teacher.length; j++) {
-//                teachers.push(teacher[j]);
-//            }
-//
-//            res.status(200).jsonp(teachers);
-//        });
+//        res.status(200).jsonp(teachers);
 //    });
 //};
+
+exports.getTeachersBySubjectName = function (req, res) {
+    console.log('GET teachers that teach a subject name');
+
+    Student.findById(req.params._id, function (err, student) {
+        if (err) res.send(500, err.message);
+        console.log(student.subjects);
+
+        var teachers = [];
+
+        //Teacher.find({"subjects": {$in: student.subjects}},{username: {$gte: "a"}}).sort("username").exec(function (err, teacher) {
+        Teacher.find({subjects: {$gte: "A"}}).sort("subjects").exec(function (err, teacher) {
+            if (err) res.send(500, err.message);
+
+            for (var j = 0; j < teacher.length; j++) {
+                for (var i = 0; i<student.subjects.length; i++){
+                if(teacher[j].subjects ==student.subjects[i]) {
+                    teachers.push(teacher[j]);
+                }
+                }
+            }
+
+            res.status(200).jsonp(teachers);
+        });
+    });
+};
