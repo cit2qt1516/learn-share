@@ -4,10 +4,53 @@ function updateProfile() {
     var long = pl.split(', ')[1];
 
     var k = new Object();
-    k.name = $('#name').val();
-    k.email = $('#email').val();
-    k.lat = lat;
-    k.long = long;
+    var subjects=[];
+    if ($('#name').val() != "") {
+        k.name = $('#name').val();
+    }
+    if ($('#email').val() != "") {
+        k.email = $('#email').val();
+    }
+    if ($('#pass').val() != "") {
+        k.pass = $('#pass').val();
+    }
+    if (document.getElementById("historia").checked) {
+        subjects.push ("Historia");
+    }
+    if (document.getElementById("musica").checked) {
+        subjects.push ("Musica");
+    }
+    if (document.getElementById("matematicas").checked) {
+        subjects.push ("Matematicas");
+    }
+    if (document.getElementById("fisica").checked) {
+        subjects.push ("Fisica");
+    }
+    if (document.getElementById("quimica").checked) {
+        subjects.push ("Quimica");
+    }
+    if (document.getElementById("dibujo").checked) {
+        subjects.push ("Dibujo");
+    }
+    if (document.getElementById("filosofia").checked) {
+        subjects.push ("Filosofia");
+    }
+    if (document.getElementById("literatura").checked) {
+        subjects.push ("Literatura");
+    }
+    if (document.getElementById("programacion").checked) {
+        subjects.push ("Programacion");
+    }
+    if (document.getElementById("tecnologia").checked) {
+        subjects.push ("Tecnologia");
+    }
+    if ($('#location').val() != "") {
+        k.lat = lat;
+    }
+    if ($('#location').val() != "") {
+        k.long = long;
+    }
+
     var data = JSON.stringify(k);
 
     $.ajax({
@@ -24,6 +67,7 @@ function updateProfile() {
             window.alert("NO FUNCIONA");
         }
     });
+
 }
 
 function getCookie(cname) {
