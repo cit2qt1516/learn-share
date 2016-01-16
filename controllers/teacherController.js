@@ -317,7 +317,7 @@ exports.getByName = function (req, res) {
 
         var teachers = [];
 
-        Teacher.find({username: {$gte: "a"}}).sort("username").exec(function (err, teacher) {
+        Teacher.find({username: {$gte: "a", $gte:"A"}}).sort("username").exec(function (err, teacher) {
             if (err) res.send(500, err.message);
 
             for (var j = 0; j < teacher.length; j++) {
@@ -384,7 +384,7 @@ exports.getTeachersBySubjectName = function (req, res) {
         var teachers = [];
 
         //Teacher.find({"subjects": {$in: student.subjects}},{username: {$gte: "a"}}).sort("username").exec(function (err, teacher) {
-        Teacher.find({subjects: {$gte: "A"}}).sort("subjects").exec(function (err, teacher) {
+        Teacher.find({subjects: {$gte: "A", $gte: "a"}}).sort("subjects").exec(function (err, teacher) {
             if (err) res.send(500, err.message);
 
             for (var j = 0; j < teacher.length; j++) {
