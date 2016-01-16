@@ -52,7 +52,7 @@ function gotoTeacherProfile(i) {
 
 function GetTeachersByDistance() {
     $.ajax({
-        url: "http://localhost:3000/find/" + getCookie("studentiD"),
+        url: "http://localhost:3000/find/" + getCookie("studentID"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -76,7 +76,7 @@ function GetTeachersByDistance() {
 
 function GetTeachersByVotes(order) {
     $.ajax({
-        url: "http://localhost:3000/teachersVot",
+        url: "http://localhost:3000/teachersVot/" + getCookie("studentID"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
@@ -102,7 +102,7 @@ function GetTeachersByVotes(order) {
 
 function GetTeachersByName(order) {
     $.ajax({
-        url: "http://localhost:3000/teachersName",
+        url: "http://localhost:3000/teachersName/" + getCookie("studentID"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",

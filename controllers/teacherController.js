@@ -130,7 +130,7 @@ exports.getTeachersBySubject = function (req, res) {
 exports.getTeachersMostVoted = function (req, res) {
     console.log('GET the most voted teachers for each subject');
 
-    var subjects = ["Historia", "Música", "Matemáticas", "Física", "Química", "Dibujo", "Filosofía", "Literatura", "Programación", "Tecnología"];
+    var subjects = ["Historia", "Musica", "Matematicas", "Fisica", "Quimica", "Dibujo", "Filosofia", "Literatura", "Programacion", "Tecnologia"];
     var teachers = [];
 
     Teacher.find({"subjects": {$in: subjects}}).sort("-votes").exec(function (err, teacher) {
@@ -317,12 +317,12 @@ exports.getByName = function (req, res) {
 
         var teachers = [];
 
-        Teacher.find({username: {$gte: "a", $gte:"A"}}).sort("username").exec(function (err, teacher) {
+        Teacher.find({username: {$gte: "a", $gte: "A"}}).sort("username").exec(function (err, teacher) {
             if (err) res.send(500, err.message);
 
             for (var j = 0; j < teacher.length; j++) {
-                for (var i = 0; i<student.subjects.length; i++){
-                    if(teacher[j].subjects ==student.subjects[i]) {
+                for (var i = 0; i < student.subjects.length; i++) {
+                    if (teacher[j].subjects == student.subjects[i]) {
                         teachers.push(teacher[j]);
                     }
                 }
@@ -355,8 +355,8 @@ exports.getByVotes = function (req, res) {
             if (err) res.send(500, err.message);
 
             for (var j = 0; j < teacher.length; j++) {
-                for (var i = 0; i<student.subjects.length; i++){
-                    if(teacher[j].subjects ==student.subjects[i]) {
+                for (var i = 0; i < student.subjects.length; i++) {
+                    if (teacher[j].subjects == student.subjects[i]) {
                         teachers.push(teacher[j]);
                     }
                 }
@@ -388,10 +388,10 @@ exports.getTeachersBySubjectName = function (req, res) {
             if (err) res.send(500, err.message);
 
             for (var j = 0; j < teacher.length; j++) {
-                for (var i = 0; i<student.subjects.length; i++){
-                if(teacher[j].subjects ==student.subjects[i]) {
-                    teachers.push(teacher[j]);
-                }
+                for (var i = 0; i < student.subjects.length; i++) {
+                    if (teacher[j].subjects == student.subjects[i]) {
+                        teachers.push(teacher[j]);
+                    }
                 }
             }
 
