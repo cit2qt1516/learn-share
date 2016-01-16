@@ -97,7 +97,7 @@ function vote() {
     var keysUser = new Object;
 
     $.ajax({
-        url: "http://localhost:3000/keys/david", // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
+        url: "http://localhost:3000/keys/" + getCookie("studentUsername"),
         type: 'GET',
         crossDomain: true,
         contentType: 'application/json',
@@ -117,7 +117,7 @@ function vote() {
                 var d = JSON.stringify(k);
 
                 $.ajax({
-                    url: "http://localhost:3000/keys/david", // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
+                    url: "http://localhost:3000/keys/" + getCookie("studentUsername"),
                     type: 'POST',
                     crossDomain: true,
                     contentType: 'application/json',
@@ -193,7 +193,7 @@ function vote() {
                             else
                                 console.log("Step 1 Non-Repudiation -> FAILED");
 
-                            var user2 = "david"; // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
+                            var user2 = getCookie("studentUsername");
                             var obj = new Object();
                             obj.bc = info;
                             obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(user2 + info), 16)), 16);
@@ -220,7 +220,7 @@ function vote() {
                                     else
                                         console.log("Step 3 Non-Repudiation -> FAILED");
 
-                                    var user2 = "david"; // CAMBIAR POR EL USERNAME DEL USUARIO ACTUAL
+                                    var user2 = getCookie("studentUsername");
                                     var obj = new Object();
                                     obj.r = r;
                                     obj.PR = bigInt2str(keysUser.privateKey.encryptPrK(str2bigInt(SHA256_hash(user2 + r), 16)), 16);
