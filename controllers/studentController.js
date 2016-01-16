@@ -147,12 +147,18 @@ exports.findTeacherOffersPlace = function (req, res) {
         if (err) res.send(500, err.message);
         console.log(student.subjects);
         Teacher.find({"subjects": {$in: student.subjects}}, function (err, teachers) {
+            var teach = [];
             for (var i = 0; i < teachers.length; i++) {
                 var distancia = getDistanceFromLatLonInKm(latitud, longitud, teachers[i].lat, teachers[i].long);
-                teachers[i].distance = distancia;
+                if (!isNaN(distancia)) {
+                    teachers[i].distance = distancia;
+                    teach.push(teachers[i]);
+                }
 
             }
-            res.status(200).json(teachers);
+            teach.sort("-distance");
+            console.log(teach);
+            res.status(200).json(teach);
         })
     });
 }
