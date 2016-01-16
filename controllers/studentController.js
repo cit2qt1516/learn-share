@@ -68,7 +68,7 @@ exports.updateStudent = function (req, res) {
                 console.log('ERROR' + err);
             }
         });
-        res.send('Modified');
+        res.status(200).jsonp('Modified');
     });
 };
 

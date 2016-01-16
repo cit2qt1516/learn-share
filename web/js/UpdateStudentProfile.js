@@ -16,34 +16,45 @@ function updateProfile() {
     }
     if (document.getElementById("historia").checked) {
         subjects.push ("Historia");
+        k.subjects=subjects;
     }
     if (document.getElementById("musica").checked) {
         subjects.push ("Musica");
+        k.subjects=subjects;
     }
     if (document.getElementById("matematicas").checked) {
         subjects.push ("Matematicas");
+        k.subjects=subjects;
     }
     if (document.getElementById("fisica").checked) {
         subjects.push ("Fisica");
+        k.subjects=subjects;
     }
     if (document.getElementById("quimica").checked) {
         subjects.push ("Quimica");
+        k.subjects=subjects;
     }
     if (document.getElementById("dibujo").checked) {
         subjects.push ("Dibujo");
+        k.subjects=subjects;
     }
     if (document.getElementById("filosofia").checked) {
         subjects.push ("Filosofia");
+        k.subjects=subjects;
     }
     if (document.getElementById("literatura").checked) {
         subjects.push ("Literatura");
+        k.subjects=subjects;
     }
     if (document.getElementById("programacion").checked) {
         subjects.push ("Programacion");
+        k.subjects=subjects;
     }
     if (document.getElementById("tecnologia").checked) {
         subjects.push ("Tecnologia");
+        k.subjects=subjects;
     }
+
     if ($('#location').val() != "") {
         k.lat = lat;
     }
@@ -54,14 +65,14 @@ function updateProfile() {
     var data = JSON.stringify(k);
 
     $.ajax({
-        url: "http://localhost:3000/student/david",
+        url: "http://localhost:3000/student/" + getCookie("studentUsername"),
         type: 'PUT',
         crossDomain: true,
         dataType: "json",
         contentType: 'application/json',
         data: data,
         success: function (data) {
-            window.alert("FUNCIONA");
+            window.location.href = "StudentProfile.html";
         },
         error: function () {
             window.alert("NO FUNCIONA");
