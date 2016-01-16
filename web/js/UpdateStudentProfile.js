@@ -4,7 +4,7 @@ function updateProfile() {
     var long = pl.split(', ')[1];
 
     var k = new Object();
-    var subjects=[];
+    var subjects = [];
     if ($('#name').val() != "") {
         k.name = $('#name').val();
     }
@@ -15,44 +15,44 @@ function updateProfile() {
         k.pass = $('#pass').val();
     }
     if (document.getElementById("historia").checked) {
-        subjects.push ("Historia");
-        k.subjects=subjects;
+        subjects.push("Historia");
+        k.subjects = subjects;
     }
     if (document.getElementById("musica").checked) {
-        subjects.push ("Musica");
-        k.subjects=subjects;
+        subjects.push("Musica");
+        k.subjects = subjects;
     }
     if (document.getElementById("matematicas").checked) {
-        subjects.push ("Matematicas");
-        k.subjects=subjects;
+        subjects.push("Matematicas");
+        k.subjects = subjects;
     }
     if (document.getElementById("fisica").checked) {
-        subjects.push ("Fisica");
-        k.subjects=subjects;
+        subjects.push("Fisica");
+        k.subjects = subjects;
     }
     if (document.getElementById("quimica").checked) {
-        subjects.push ("Quimica");
-        k.subjects=subjects;
+        subjects.push("Quimica");
+        k.subjects = subjects;
     }
     if (document.getElementById("dibujo").checked) {
-        subjects.push ("Dibujo");
-        k.subjects=subjects;
+        subjects.push("Dibujo");
+        k.subjects = subjects;
     }
     if (document.getElementById("filosofia").checked) {
-        subjects.push ("Filosofia");
-        k.subjects=subjects;
+        subjects.push("Filosofia");
+        k.subjects = subjects;
     }
     if (document.getElementById("literatura").checked) {
-        subjects.push ("Literatura");
-        k.subjects=subjects;
+        subjects.push("Literatura");
+        k.subjects = subjects;
     }
     if (document.getElementById("programacion").checked) {
-        subjects.push ("Programacion");
-        k.subjects=subjects;
+        subjects.push("Programacion");
+        k.subjects = subjects;
     }
     if (document.getElementById("tecnologia").checked) {
-        subjects.push ("Tecnologia");
-        k.subjects=subjects;
+        subjects.push("Tecnologia");
+        k.subjects = subjects;
     }
 
     if ($('#location').val() != "") {

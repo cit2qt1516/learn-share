@@ -52,7 +52,7 @@ function updateProfile() {
     var data = JSON.stringify(k);
 
     $.ajax({
-        url: "http://localhost:3000/teacher/juan",
+        url: "http://localhost:3000/teacher/" + getCookie("teacherUsername"),
         type: 'PUT',
         crossDomain: true,
         dataType: "json",
