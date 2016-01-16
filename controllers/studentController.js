@@ -171,38 +171,39 @@ exports.loginUser = function (req, res) {
     var name = req.body.username;
     var pass = req.body.pass;
     var passEncriptada = encriptar(name, pass);
-    Student.findOne({"username": name}, function (err, studen) {
-        if (studen) {
-            if (studen.pass == passEncriptada) {
-                res.json({
-                    userId: studen._id,
-                    username: studen.username,
+    console.log(passEncriptada);
+    Student.findOne({"username": name}, function (err, student) {
+        if (student) {
+            if (student.pass == passEncriptada) {
+                res.status(200).jsonp({
+                    ID: student._id,
+                    username: student.username,
+                    profile: student.profile
                     //username:user.username
                 });
+            } else {
+                console.log("contraseña incorrecta");
+                res.send('contraseña incorrecta');
             }
-            else
-                res.send('contrase�a incorrecta')
 
         } else {
             Teacher.findOne({username: req.body.username}, function (err, teacher) {
                 if (teacher) {
                     if (teacher.pass == passEncriptada) {
-                        res.json({
-                            teacherId: teacher._id,
+                        res.status(200).jsonp({
+                            ID: teacher._id,
                             username: teacher.username,
+                            profile: teacher.profile
                             //username:user.username
                         });
+                    } else {
+                        console.log("contraseña incorrecta");
+                        res.send('contraseña incorrecta');
                     }
-                    else
-                        res.send('contrase�a incorrecta')
-
                 }
             })
-            res.send('Ese usuario no existe');
-
         }
     });
-
 }
 
 //exports.addImages = function (req, res) {
