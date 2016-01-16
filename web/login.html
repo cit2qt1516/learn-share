@@ -15,7 +15,6 @@
 <nav class="navbar navbar-fixed-top navbar-inverse">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand">LearnShare</a>
         </div>
     </div>
 </nav>
@@ -23,19 +22,27 @@
 <div class="container">
     <div class="row row-offcanvas row-offcanvas-right">
         <div class="col-xs-12 col-sm-12">
-            <div class="jumbotron">
-                <h1>Página principal</h1>
+            <div style="height: 500px" class="jumbotron">
+                <div class="col-xs-12 col-sm-8">
+                    <h1 style="margin-top: 120px; font-size: 100px">Learn<strong><i>Share</i></strong>
+                    </h1>
 
-                <p>Esta es la página de entrada a LearnShare</p>
-            </div>
-            <div class="row">
-                <div class="container theme-showcase" role="main">
+                    <p><i> - Estableciendo contacto entre <b>profesores</b> y <b>alumnos</b> -
+                    </i></p>
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                    <div class="row">
 
-                    <form action="javascript:LoginProfile();">
-                        Username: <input class="form-control" style="width: 20%" type="text" id="username"><br>
-                        Password: <input class="form-control" style="width: 20%" type="password" id="pass"><br>
-                        <input type="submit" value="Enviar">
-                    </form>
+                        <form style="margin-top: 120px" action="javascript:LoginProfile();">
+                            <p>Username:</p> <input class="form-control" style="width: 80%" type="text"
+                                                    id="username"><br>
+
+                            <p>Password:</p> <input class="form-control" style="width: 80%" type="password"
+                                                    id="pass"><br>
+                            <input style="float: right; margin-right: 70px" class="btn btn-default" type="submit"
+                                   value="Enviar">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

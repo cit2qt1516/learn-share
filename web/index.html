@@ -20,9 +20,9 @@
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="index.html">Home</a></li>
-                <li><a href="StudentProfile.html">My Profile</a></li>
-                <li><a href="UpdateStudentProfile.html">Edit My Profile</a></li>
-                <li style="margin-left: 400px"><a href="login.html">Log Out</a></li>
+                <li><a href="StudentProfile.html">Mi Perfil</a></li>
+                <li><a href="UpdateStudentProfile.html">Editar mi perfil</a></li>
+                <li style="margin-left: 500px"><a href="login.html">Log Out</a></li>
             </ul>
         </div>
     </div>
@@ -32,9 +32,10 @@
     <div class="row row-offcanvas row-offcanvas-right">
         <div class="col-xs-12 col-sm-12">
             <div class="jumbotron">
-                <h1>Página principal</h1>
+                <h1>Learn<strong><i>Share</i></strong></h1>
 
-                <p>Esta es la página principal del perfil de estudiante...</p>
+                <p style="margin-top: 10px">Visita el perfil de los profesores que ofrecen <b>tus asignaturas</b>, los
+                    <b>mejores profesores</b>, o los que están <b>más cerca tuyo</b>...</p>
             </div>
             <div class="row">
                 <div class="col-xs-6 col-lg-9">
@@ -78,6 +79,28 @@
                             </tr>
                             </thead>
                             <tbody id="top_table_body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-6 col-lg-9"></div>
+
+                <div class="col-xs-6 col-lg-3">
+                    <h2>Cerca de tí</h2>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="distance_table">
+                            <thead>
+                            <tr>
+                                <th data-field="subject">Asignatura</th>
+                                <th data-field="username">Profesor</th>
+                                <th data-field="votes">Votos</th>
+                            </tr>
+                            </thead>
+                            <tbody id="distance_table_body">
                             </tbody>
                         </table>
                     </div>

@@ -59,7 +59,7 @@ function updateProfile() {
         contentType: 'application/json',
         data: data,
         success: function (data) {
-            window.location.href = "TeacherProfile.html";
+            window.location.href = "indexTeacher.html";
         },
         error: function () {
             window.alert("NO FUNCIONA");

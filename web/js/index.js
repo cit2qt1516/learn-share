@@ -5,6 +5,7 @@
 window.onload = function () {
     GetTeachers();
     GetTopTeachers();
+    GetDistanceTeachers();
 };
 
 function GetTeachers() {
@@ -41,6 +42,25 @@ function GetTopTeachers() {
         },
         error: function () {
             window.alert("No se ha obtenido el Top de profesores");
+        }
+    });
+}
+
+function GetDistanceTeachers() {
+    $.ajax({
+        url: "http://localhost:3000/find/" + getCookie("studentID"),
+        type: 'GET',
+        crossDomain: true,
+        dataType: "json",
+        contentType: 'application/json',
+        success: function (data) {
+            for (var i = 0; i < data.length; i++) {
+                var text = '<tr onclick=gotoTeacherProfile(\"' + data[i].username + '\")> <td>' + data[i].subjects[0] + '</td> <td>' + data[i].username + '</td> <td>' + data[i].votes + '</td> </tr>';
+                $(text).appendTo($('#distance_table_body'));
+            }
+        },
+        error: function () {
+            window.alert("No se ha obtenido la lista de profesores por distancia");
         }
     });
 }
