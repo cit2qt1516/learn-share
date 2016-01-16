@@ -202,10 +202,8 @@ exports.loginUser = function (req, res) {
                     }
                 }
             })
-            res.send('Ese usuario no existe');
         }
     });
-
 }
 
 //exports.addImages = function (req, res) {

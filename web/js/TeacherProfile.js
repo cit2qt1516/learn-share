@@ -1,6 +1,6 @@
 window.onload = function () {
-    document.cookie = "studentUsername=david";
-    document.cookie = "profile=student";
+    //document.cookie = "studentUsername=david";
+    //document.cookie = "profile=student";
     getProfile();
 };
 

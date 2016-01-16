@@ -1,10 +1,6 @@
-/**
- * Created by alfredo on 10/01/16.
- */
-
 function getProfile() {
-    //TODO poner las cookies bien para jugar
-document.cookie="studentUsername=paco"
+//document.cookie="studentUsername=paco";
+
     // GET
     $.ajax({
         url: "http://localhost:3000/student/" + getCookie("studentUsername"),
@@ -21,8 +17,6 @@ document.cookie="studentUsername=paco"
             $('<h3> <strong> Username: </strong>' + data.username + '</h3>').appendTo($('#student_profile'));
             $('<h3> <strong> Email: </strong>' + data.email + '</h3>').appendTo($('#student_profile'));
             $('<h3> <strong> Asignaturas: </strong>' + data.subjects + '</h3>').appendTo($('#student_profile'));
-
-
         },
         error: function () {
             window.alert("NO FUNCIONA");

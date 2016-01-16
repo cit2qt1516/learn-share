@@ -1,6 +1,6 @@
 //TODO poner las cookies bien para jugar
 //document.cookie = "studentID=5670112c87de8b0325000001";
-document.cookie = "studentID=566d36c5e9c246690f000001";
+//document.cookie = "studentID=566d36c5e9c246690f000001";
 
 window.onload = function () {
     GetTeachers();

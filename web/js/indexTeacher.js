@@ -1,5 +1,5 @@
 window.onload = function () {
-    document.cookie = "teacherUsername=juan";
+    //document.cookie = "teacherUsername=juan";
     getProfile();
 };
 

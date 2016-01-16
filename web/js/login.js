@@ -1,16 +1,9 @@
-/**
- * Created by alfredo on 10/01/16.
- */
-
 function LoginProfile() {
-
-//TODO PONER LOS CAMPOS BIEN
     var k = new Object();
-    k.username = "lucia";
-    k.pass = "1234";
+    k.username = $('#username').val();
+    k.pass = $('#pass').val();
     var data = JSON.stringify(k);
-      $.ajax({
-
+    $.ajax({
         url: "http://localhost:3000/login",
         type: 'POST',
         crossDomain: true,
@@ -18,20 +11,31 @@ function LoginProfile() {
         contentType: 'application/json',
         data: data,
         success: function (data) {
-            console.log(data);
-            setCookie("username",data.username,"1");
-            console.log(getCookie("username"));
+            if (data.profile === "student") {
+                setCookie("studentID", data.ID, "1");
+                setCookie("studentUsername", data.username, "1");
+                setCookie("profile", data.profile, "1");
+
+                window.location.href = "index.html";
+            } else {
+                setCookie("teacherID", data.ID, "1");
+                setCookie("teacherUsername", data.username, "1");
+                setCookie("profile", data.profile, "1");
+
+                window.location.href = "indexTeacher.html";
+            }
+
         },
         error: function () {
-            window.alert("NO FUNCIONA");
+            window.alert("USUARIO O CONTRASEÑA INCORRECTOS");
         }
     });
 }
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+d.toUTCString();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
