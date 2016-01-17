@@ -146,23 +146,25 @@ function GetTeachersByName(order) {
     });
 }
 
-function GetTeachersByNameInv() {
+function GetTeachersBySubject(order) {
     $.ajax({
-        url: "http://localhost:3000/teachersNameInv",
+        url: "http://localhost:3000/teachersSubject/" + getCookie("studentID"),
         type: 'GET',
         crossDomain: true,
         dataType: "json",
         contentType: 'application/json',
-        success: function (data) {
-            $("#user_profile").text('');
+        success: function (dat) {
+            var data;
+            if (order == 0)
+                data = dat.reverse();
+            else
+                data = dat;
 
-            console.log(data);
+            $('#main_table_body').empty();
             for (var i = 0; i < data.length; i++) {
-                $('<h3> <strong> Nombre: </strong>' + data[i].name + '</h3>').appendTo($('#teacher_profile'));
-                $('<h3> <strong> Asignaturas: </strong>' + data[i].subjects[0] + '</h3>').appendTo($('#teacher_profile'));
-                $('<h3> <strong> Votos: </strong>' + data[i].votes + '</h3>').appendTo($('#teacher_profile'));
+                var text = '<tr onclick=gotoTeacherProfile(\"' + data[i].username + '\")> <td>' + data[i].subjects[0] + '</td> <td>' + data[i].username + '</td> <td>' + data[i].votes + '</td> </tr>';
+                $(text).appendTo($('#main_table_body'));
             }
-
         },
         error: function () {
             window.alert("NO FUNCIONA");
